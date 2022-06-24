@@ -1,0 +1,146 @@
+options {
+    STATIC = false ;
+    JDK_VERSION = "1.8";
+    TOKEN_FACTORY = "mongo.search.transform.TokenFactory";
+}
+
+PARSER_BEGIN(MongoSearchEngineParser)
+    package mongo.parser;
+
+import mongo.parser.MongoSearchEngineParserConstants.*;
+import java.util.ArrayList;
+import mongo.search.util.StringUtil;import org.bson.conversions.Bson;
+import mongo.search.transform.TransformObject;
+import mongo.search.transform.FiltersConsumer;
+import java.util.List;
+
+public class MongoSearchEngineParser {
+}
+PARSER_END(MongoSearchEngineParser)
+
+SKIP : {" " | "\n" | "\r" | "\r\n" }
+TOKEN : { < L_PAR : "(" >}
+TOKEN : { < R_PAR : ")" >}
+TOKEN : { < AND : "&&" | "and" | "AND" > }
+TOKEN : { < OR : "||" | "or" | "OR" >}
+TOKEN : { < EQ : "=" >}
+TOKEN : { < NE : "<>" | "!=" | "^=" >}
+TOKEN : { < GT : ">" >}
+TOKEN : { < LT : "<" >}
+TOKEN : { < LE : "<=" >}
+TOKEN : { < GE : ">=" >}
+TOKEN : { < NUMBER : <DIGITS> | <DIGITS> "." <DIGITS> | "." <DIGITS> >}
+TOKEN : { < OBJ_FIELD : (["A"-"Z","a"-"z","0"-"9","."])+ > }
+TOKEN : {  < STRING_LITERAL : "'"  (~["\n","\r","'"])*  "'"> }
+TOKEN : { < #DIGITS : (["0"-"9"])+ > }
+
+Bson parse():
+{
+    Bson result;
+}
+{
+    result = OrExpression()
+    <EOF>
+    {return result;}
+}
+
+Bson OrExpression():
+{
+    Bson value;
+    Bson result;
+    Token operator = null;
+}
+{
+    value = AndExpression()
+    {result = value;}
+    (
+        operator=<OR>
+        value = AndExpression()
+        {
+            List<Object> params = new ArrayList();
+            List<Object> param = new ArrayList();
+            param.add(result);
+            param.add(value);
+            params.add(param);
+            TransformObject object = new TransformObject(operator,params);
+            result = applyTransfromFunction(object);
+        }
+    )*
+    {return result;}
+}
+
+Bson AndExpression():
+{
+    Bson value;
+    Bson result;
+    Token operator = null;
+}
+{
+    value = LogicalExpression()
+    {result = value;}
+    (
+        operator=<AND>
+        value = LogicalExpression()
+        {
+            List<Object> params = new ArrayList();
+            List<Object> param = new ArrayList();
+            param.add(result);
+            param.add(value);
+            params.add(param);
+            TransformObject object = new TransformObject(operator,params);
+            result = applyTransfromFunction(object);
+        }
+    )*
+    {return result;}
+}
+
+Bson LogicalExpression():
+{
+    Bson value;
+    Token token;
+}
+{
+    <L_PAR> value = OrExpression() <R_PAR>
+    {return value;}
+|
+    value = FieldComparision()
+    {return value;}
+}
+
+Bson FieldComparision():
+{
+    Token operator;
+    Token objField;
+    Token numValue = null;
+    Token strValue = null;
+}
+{
+    objField=<OBJ_FIELD> (operator=<GE> | operator=<LE> | operator=<EQ> | operator=<NE> | operator=<GT> | operator=<LT>) (numValue=<NUMBER> | strValue= nakedStringToken() )
+    {
+        List<Object> params = new ArrayList();
+        params.add(objField.image);
+        if(strValue != null) params.add(strValue.image);
+        if(numValue != null) params.add(Double.valueOf(numValue.image));
+        TransformObject object = new TransformObject(operator,params);
+        return applyTransfromFunction(object);
+    }
+}
+
+Token nakedStringToken():
+{
+    Token token;
+}
+{
+    token=<STRING_LITERAL>
+    {return StringUtil.unescape(token);}
+}
+
+Bson applyTransfromFunction(TransformObject object):
+{
+}
+{
+    {
+        FiltersConsumer consumer = new FiltersConsumer();
+        return (Bson)consumer.apply(object);
+    }
+}
