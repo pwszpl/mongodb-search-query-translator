@@ -29,6 +29,7 @@ TOKEN : { < GT : ">" >}
 TOKEN : { < LT : "<" >}
 TOKEN : { < LE : "<=" >}
 TOKEN : { < GE : ">=" >}
+TOKEN : { < R_NUMBER : ("-")?<NUMBER> >}
 TOKEN : { < NUMBER : <DIGITS> | <DIGITS> "." <DIGITS> | "." <DIGITS> >}
 TOKEN : { < OBJ_FIELD : (["A"-"Z","a"-"z","0"-"9","."])+ > }
 TOKEN : {  < STRING_LITERAL : "'"  (~["\n","\r","'"])*  "'"> }
@@ -115,7 +116,7 @@ Bson FieldComparision():
     Token strValue = null;
 }
 {
-    objField=<OBJ_FIELD> (operator=<GE> | operator=<LE> | operator=<EQ> | operator=<NE> | operator=<GT> | operator=<LT>) (numValue=<NUMBER> | strValue= nakedStringToken() )
+    objField=<OBJ_FIELD> (operator=<GE> | operator=<LE> | operator=<EQ> | operator=<NE> | operator=<GT> | operator=<LT>) (numValue=<R_NUMBER> | strValue= nakedStringToken() )
     {
         List<Object> params = new ArrayList();
         params.add(objField.image);

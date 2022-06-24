@@ -22,6 +22,11 @@ class MongoSearchEngineParserTest {
     }
 
     @Test
+    void shouldEvaluteNegativeNumbers(){
+        assertParserResult("x.z=-10", Filters.eq("x.z",-10.0));
+    }
+
+    @Test
     void shouldEvaluateAndStatement() {
         assertParserResult("x.y='z' and x.z='z'", Filters.and(Filters.eq("x.y","z"),Filters.eq("x.z","z")));
         assertParserResult("x.y='z' && x.z=99", Filters.and(Filters.eq("x.y","z"),Filters.eq("x.z",99.0)));
