@@ -42,8 +42,8 @@ class MongoSearchEngineParserTest {
         assertBsonResult("x.y='z' and x.z='z'", Filters.and(Filters.eq("x.y","z"),Filters.eq("x.z","z")));
         assertBsonResult("x.y='z' && x.z=99", Filters.and(Filters.eq("x.y","z"),Filters.eq("x.z",99.0)));
 
-        assertCriteriaResult("x.y='z' and x.z='z'", Criteria.where("x.y").is("z").andOperator(Criteria.where("x.z").is("z")));
-        assertCriteriaResult("x.y='z' && x.z=99", Criteria.where("x.y").is("z").andOperator(Criteria.where("x.z").is(99.0)));
+        assertCriteriaResult("x.y='z' and x.z='z'", new Criteria().andOperator(Criteria.where("x.y").is("z"),(Criteria.where("x.z").is("z"))));
+        assertCriteriaResult("x.y='z' && x.z=99", new Criteria().andOperator(Criteria.where("x.y").is("z"),(Criteria.where("x.z").is(99.0))));
     }
 
     @Test
@@ -51,8 +51,8 @@ class MongoSearchEngineParserTest {
         assertBsonResult("x.y='z' or x.z='z'", Filters.or(Filters.eq("x.y","z"),Filters.eq("x.z","z")));
         assertBsonResult("x.y='z' || x.z=99", Filters.or(Filters.eq("x.y","z"),Filters.eq("x.z",99.0)));
 
-        assertCriteriaResult("x.y='z' or x.z='z'", Criteria.where("x.y").is("z").orOperator(Criteria.where("x.z").is("z")));
-        assertCriteriaResult("x.y='z' || x.z=99", Criteria.where("x.y").is("z").orOperator(Criteria.where("x.z").is(99.0)));
+        assertCriteriaResult("x.y='z' or x.z='z'", new Criteria().orOperator(Criteria.where("x.y").is("z"),(Criteria.where("x.z").is("z"))));
+        assertCriteriaResult("x.y='z' || x.z=99", new Criteria().orOperator(Criteria.where("x.y").is("z"),(Criteria.where("x.z").is(99.0))));
     }
 
     @Test
