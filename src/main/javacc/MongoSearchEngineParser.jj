@@ -7,15 +7,26 @@ options {
 PARSER_BEGIN(MongoSearchEngineParser)
     package mongo.parser;
 
-import mongo.parser.MongoSearchEngineParserConstants.*;
-import java.util.ArrayList;
-import mongo.search.util.StringUtil;import org.bson.conversions.Bson;
-import mongo.search.transform.TransformObject;
-import mongo.search.transform.FiltersConsumer;
-import java.util.List;
+    import java.util.ArrayList;
+    import mongo.search.transform.CriteriaTransformer;
+    import mongo.search.util.StringUtil;
+    import mongo.search.transform.TransformObject;
+    import java.util.List;
+    import java.util.function.Function;
+    import mongo.search.transform.CriteriaTransformer;
+    import mongo.search.transform.FiltersTransformer;
 
-public class MongoSearchEngineParser {
-}
+    public class MongoSearchEngineParser {
+        private Function transformer = new FiltersTransformer();
+
+        public void setCriteraMode(){
+            this.transformer = new CriteriaTransformer();
+        }
+
+        public void setBSONMode(){
+            this.transformer = new FiltersTransformer();
+        }
+    }
 PARSER_END(MongoSearchEngineParser)
 
 SKIP : {" " | "\n" | "\r" | "\r\n" }
@@ -35,9 +46,9 @@ TOKEN : { < OBJ_FIELD : (["A"-"Z","a"-"z","0"-"9","."])+ > }
 TOKEN : {  < STRING_LITERAL : "'"  (~["\n","\r","'"])*  "'"> }
 TOKEN : { < #DIGITS : (["0"-"9"])+ > }
 
-Bson parse():
+Object parse():
 {
-    Bson result;
+    Object result;
 }
 {
     result = OrExpression()
@@ -45,10 +56,10 @@ Bson parse():
     {return result;}
 }
 
-Bson OrExpression():
+Object OrExpression():
 {
-    Bson value;
-    Bson result;
+    Object value;
+    Object result;
     Token operator = null;
 }
 {
@@ -59,10 +70,8 @@ Bson OrExpression():
         value = AndExpression()
         {
             List<Object> params = new ArrayList();
-            List<Object> param = new ArrayList();
-            param.add(result);
-            param.add(value);
-            params.add(param);
+            params.add(result);
+            params.add(value);
             TransformObject object = new TransformObject(operator,params);
             result = applyTransfromFunction(object);
         }
@@ -70,10 +79,10 @@ Bson OrExpression():
     {return result;}
 }
 
-Bson AndExpression():
+Object AndExpression():
 {
-    Bson value;
-    Bson result;
+    Object value;
+    Object result;
     Token operator = null;
 }
 {
@@ -84,10 +93,8 @@ Bson AndExpression():
         value = LogicalExpression()
         {
             List<Object> params = new ArrayList();
-            List<Object> param = new ArrayList();
-            param.add(result);
-            param.add(value);
-            params.add(param);
+            params.add(result);
+            params.add(value);
             TransformObject object = new TransformObject(operator,params);
             result = applyTransfromFunction(object);
         }
@@ -95,9 +102,9 @@ Bson AndExpression():
     {return result;}
 }
 
-Bson LogicalExpression():
+Object LogicalExpression():
 {
-    Bson value;
+    Object value;
     Token token;
 }
 {
@@ -108,7 +115,7 @@ Bson LogicalExpression():
     {return value;}
 }
 
-Bson FieldComparision():
+Object FieldComparision():
 {
     Token operator;
     Token objField;
@@ -136,12 +143,11 @@ Token nakedStringToken():
     {return StringUtil.unescape(token);}
 }
 
-Bson applyTransfromFunction(TransformObject object):
+Object applyTransfromFunction(TransformObject object):
 {
 }
 {
     {
-        FiltersConsumer consumer = new FiltersConsumer();
-        return (Bson)consumer.apply(object);
+        return transformer.apply(object);
     }
 }

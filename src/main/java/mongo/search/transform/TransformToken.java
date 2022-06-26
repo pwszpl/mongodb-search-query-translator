@@ -3,14 +3,20 @@ package mongo.search.transform;
 import mongo.parser.Token;
 
 public class TransformToken extends Token {
-    private String function;
+    private String functionBSON;
+    private String functionCriteria;
 
-    public TransformToken(int kind, String image, String function) {
+    public TransformToken(int kind, String image, String function, String functionCrit) {
         super(kind, image);
-        this.function = function;
+        this.functionBSON = function;
+        this.functionCriteria = functionCrit;
     }
 
-    public String getFunction() {
-        return function;
+    public String getFunctionBSON() {
+        return functionBSON;
+    }
+
+    public String getFunctionCriteria() {
+        return functionCriteria;
     }
 }
