@@ -47,7 +47,7 @@ Parser currently supports following types of symbol:
 
 | Symbols                     | Symbol Type                         | Type          |
 |-----------------------------|-------------------------------------|---------------|
-| `OR`, `or`, `&#124;&#124;`  | **Or** operator                     | Logical       |
+| `OR`, `or`, `\|\|`  | **Or** operator                     | Logical       |
 | `AND`, `and`, `&&`          | **And** operator                    | Logical       |
 | `=`                         | **Equals** operator                 | Math          |
 | `<>`, `!=`, `^=`            | **Not Equals** operator             | Math          | 
