@@ -35,7 +35,7 @@ jobs:
         mvn \
           --no-transfer-progress \
           --batch-mode \
-          deploy -P release-central -e
+          deploy -P release-central
       env:
         MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
         MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
