@@ -25,5 +25,8 @@ hs_err_pid*
 #maven products
 target
 
+#gpg signatures
+*.asc
+
 #intellij data
 .idea
