@@ -36,6 +36,12 @@ class MongoSearchEngineParserTest {
 
         assertCriteriaResult("x.z=-10", Criteria.where("x.z").is(-10.0));
     }
+    @Test
+    void shouldEvaluteExistsFunction(){
+        assertBsonResult("exists(x.z)", Filters.exists("x.z"));
+
+        assertCriteriaResult("exists(x.z)", Criteria.where("x.z").exists(true));
+    }
 
     @Test
     void shouldEvaluateAndStatement() {

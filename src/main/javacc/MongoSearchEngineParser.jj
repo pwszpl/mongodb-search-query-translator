@@ -33,6 +33,7 @@ SKIP : {" " | "\n" | "\r" | "\r\n" }
 
 TOKEN : { < IN : "IN" | "in" >}
 TOKEN : { < NIN : "NIN" | "nin" >}
+TOKEN : { < EXISTS: "EXISTS" | "exists" >}
 TOKEN : { < L_PAR : "(" >}
 TOKEN : { < R_PAR : ")" >}
 TOKEN : { < AND : "&&" | "and" | "AND" > }
@@ -108,6 +109,21 @@ Object LogicalExpression():
 |
     value = FieldComparision()
     {return value;}
+|
+    value = OneArgumentFunction()
+    {return value;}
+}
+
+Object OneArgumentFunction():
+{
+    Token operator;
+    Token field;
+}
+{
+    operator=<EXISTS> <L_PAR> field=<OBJ_FIELD> <R_PAR>
+    {
+        return applyTransfromFunction(operator,field);
+    }
 }
 
 Object FieldComparision():

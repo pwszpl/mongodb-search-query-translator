@@ -10,7 +10,8 @@ public enum FunctionsMapping {
     LE("lte"),
     GE("gte"),
     IN("in"),
-    NIN("nin");
+    NIN("nin"),
+    EXISTS("exists");
 
     private String filtersFunction;
     private String criteraFunction;
