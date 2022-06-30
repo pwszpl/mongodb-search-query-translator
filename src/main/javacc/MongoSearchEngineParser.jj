@@ -32,6 +32,7 @@ PARSER_END(MongoSearchEngineParser)
 SKIP : {" " | "\n" | "\r" | "\r\n" }
 
 TOKEN : { < IN : "IN" | "in" >}
+TOKEN : { < NIN : "NIN" | "nin" >}
 TOKEN : { < L_PAR : "(" >}
 TOKEN : { < R_PAR : ")" >}
 TOKEN : { < AND : "&&" | "and" | "AND" > }
@@ -132,7 +133,7 @@ Object evaluatFieldOperator(Token field):
     List<Object> inList = new ArrayList();
 }
 {
-    operator=<IN> <L_PAR>
+    (operator=<IN> | operator=<NIN> ) <L_PAR>
         (
        numValue=<R_NUMBER>
        { inList.add(numValue); }

@@ -9,7 +9,8 @@ public enum FunctionsMapping {
     LT("lt"),
     LE("lte"),
     GE("gte"),
-    IN("in");
+    IN("in"),
+    NIN("nin");
 
     private String filtersFunction;
     private String criteraFunction;

@@ -63,6 +63,16 @@ class MongoSearchEngineParserTest {
         assertCriteriaResult("x.y in ('a' 'b' 'c')", Criteria.where("x.y").in(new String[] {"a","b","c"}));
         assertCriteriaResult("x.y in (1 2 3)", Criteria.where("x.y").in(new Double[] {1.0,2.0,3.0}));
     }
+
+    @Test
+    void shouldEvaluateNinOperator() {
+        assertBsonResult("x.y nin ('a' 'b' 'c')", Filters.nin("x.y",new String[] {"a","b","c"}));
+        assertBsonResult("x.y nin (1 2 3)", Filters.nin("x.y",new Double[] {1.0,2.0,3.0}));
+
+        assertCriteriaResult("x.y nin ('a' 'b' 'c')", Criteria.where("x.y").nin(new String[] {"a","b","c"}));
+        assertCriteriaResult("x.y nin (1 2 3)", Criteria.where("x.y").nin(new Double[] {1.0,2.0,3.0}));
+    }
+
     @Test
     void shouldKeepLogicalPrecedence(){
         assertBsonResult("x.y='z' or x.y='y' and x.z=99 or x.z=1200",
