@@ -71,11 +71,7 @@ Object OrExpression():
         operator=<OR>
         value = AndExpression()
         {
-            List<Object> params = new ArrayList();
-            params.add(result);
-            params.add(value);
-            TransformObject object = new TransformObject(operator,params);
-            result = applyTransfromFunction(object);
+            result = applyTransfromFunction(operator,result,value);
         }
     )*
     {return result;}
@@ -94,11 +90,7 @@ Object AndExpression():
         operator=<AND>
         value = LogicalExpression()
         {
-            List<Object> params = new ArrayList();
-            params.add(result);
-            params.add(value);
-            TransformObject object = new TransformObject(operator,params);
-            result = applyTransfromFunction(object);
+            result = applyTransfromFunction(operator,result,value);
         }
     )*
     {return result;}
@@ -138,49 +130,32 @@ Object evaluatFieldOperator(Token field):
     Token numValue = null;
     Token strValue = null;
     List<Object> inList = new ArrayList();
-    List<Object> params = new ArrayList();
-    TransformObject object = null;
 }
 {
     operator=<IN> <L_PAR>
         (
        numValue=<R_NUMBER>
-       { inList.add(Double.valueOf(numValue.image)); }
+       { inList.add(numValue); }
        |
-       strValue= nakedStringToken()
-       { inList.add(strValue.image); }
+       strValue= <STRING_LITERAL>
+       { inList.add(strValue); }
        )* <R_PAR>
     {
-        params.add(field.image);
-        params.add(inList);
-        object = new TransformObject(operator,params);
-        return applyTransfromFunction(object);
+        return applyTransfromFunction(operator,field,inList);
     }
     |
-    (operator=<GE> | operator=<LE> | operator=<EQ> | operator=<NE> | operator=<GT> | operator=<LT>) (numValue=<R_NUMBER> | strValue= nakedStringToken() )
+    (operator=<GE> | operator=<LE> | operator=<EQ> | operator=<NE> | operator=<GT> | operator=<LT>) (numValue=<R_NUMBER> | strValue= <STRING_LITERAL> )
         {
-            params.add(field.image);
-            if(strValue != null) params.add(strValue.image);
-            if(numValue != null) params.add(Double.valueOf(numValue.image));
-            object = new TransformObject(operator,params);
-            return applyTransfromFunction(object);
+            return applyTransfromFunction(operator,field,numValue,strValue);
         }
 }
 
-Token nakedStringToken():
-{
-    Token token;
-}
-{
-    token=<STRING_LITERAL>
-    {return StringUtil.unescape(token);}
-}
-
-Object applyTransfromFunction(TransformObject object):
+Object applyTransfromFunction(Token operator, Object... objects):
 {
 }
 {
     {
-        return transformer.apply(object);
+      TransformObject object = new TransformObject(operator,objects);
+      return transformer.apply(object);
     }
 }
