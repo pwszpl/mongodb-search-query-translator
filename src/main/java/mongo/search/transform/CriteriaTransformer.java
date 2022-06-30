@@ -43,7 +43,7 @@ public class CriteriaTransformer implements Function {
             }
         }
         // Create an initial Critera condifition for field and return true;
-        if(StringUtil.isStringInList(function,"exists")){
+        else if(StringUtil.isStringInList(function,"exists")){
             return Criteria.where((String) transform.getParams().get(0)).exists(true);
         }
         // Create an array of Critera for andOperator/orOperator create new Criteria object

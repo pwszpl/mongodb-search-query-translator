@@ -2,6 +2,7 @@ options {
     STATIC = false ;
     JDK_VERSION = "1.8";
     TOKEN_FACTORY = "mongo.search.transform.TokenFactory";
+    IGNORE_CASE = true;
 }
 
 PARSER_BEGIN(MongoSearchEngineParser)
@@ -31,13 +32,13 @@ PARSER_END(MongoSearchEngineParser)
 
 SKIP : {" " | "\n" | "\r" | "\r\n" }
 
-TOKEN : { < IN : "IN" | "in" >}
-TOKEN : { < NIN : "NIN" | "nin" >}
-TOKEN : { < EXISTS: "EXISTS" | "exists" >}
+TOKEN : { < IN : "IN" >}
+TOKEN : { < NIN : "NIN" >}
+TOKEN : { < EXISTS: "EXISTS" >}
 TOKEN : { < L_PAR : "(" >}
 TOKEN : { < R_PAR : ")" >}
-TOKEN : { < AND : "&&" | "and" | "AND" > }
-TOKEN : { < OR : "||" | "or" | "OR" >}
+TOKEN : { < AND : "&&" | "AND" > }
+TOKEN : { < OR : "||" | "OR" >}
 TOKEN : { < EQ : "=" >}
 TOKEN : { < NE : "<>" | "!=" | "^=" >}
 TOKEN : { < GT : ">" >}
