@@ -30,6 +30,8 @@ PARSER_BEGIN(MongoSearchEngineParser)
 PARSER_END(MongoSearchEngineParser)
 
 SKIP : {" " | "\n" | "\r" | "\r\n" }
+
+TOKEN : { < IN : "IN" | "in" >}
 TOKEN : { < L_PAR : "(" >}
 TOKEN : { < R_PAR : ")" >}
 TOKEN : { < AND : "&&" | "and" | "AND" > }
@@ -121,17 +123,48 @@ Object FieldComparision():
     Token objField;
     Token numValue = null;
     Token strValue = null;
+    Object ret = null;
 }
 {
-    objField=<OBJ_FIELD> (operator=<GE> | operator=<LE> | operator=<EQ> | operator=<NE> | operator=<GT> | operator=<LT>) (numValue=<R_NUMBER> | strValue= nakedStringToken() )
+    objField=<OBJ_FIELD> ret=evaluatFieldOperator(objField)
     {
-        List<Object> params = new ArrayList();
-        params.add(objField.image);
-        if(strValue != null) params.add(strValue.image);
-        if(numValue != null) params.add(Double.valueOf(numValue.image));
-        TransformObject object = new TransformObject(operator,params);
+        return ret;
+    }
+}
+
+Object evaluatFieldOperator(Token field):
+{
+    Token operator;
+    Token numValue = null;
+    Token strValue = null;
+    List<Object> inList = new ArrayList();
+    List<Object> params = new ArrayList();
+    TransformObject object = null;
+}
+{
+    operator=<IN> <L_PAR>
+        (
+       numValue=<R_NUMBER>
+       { inList.add(Double.valueOf(numValue.image)); }
+       |
+       strValue= nakedStringToken()
+       { inList.add(strValue.image); }
+       )* <R_PAR>
+    {
+        params.add(field.image);
+        params.add(inList);
+        object = new TransformObject(operator,params);
         return applyTransfromFunction(object);
     }
+    |
+    (operator=<GE> | operator=<LE> | operator=<EQ> | operator=<NE> | operator=<GT> | operator=<LT>) (numValue=<R_NUMBER> | strValue= nakedStringToken() )
+        {
+            params.add(field.image);
+            if(strValue != null) params.add(strValue.image);
+            if(numValue != null) params.add(Double.valueOf(numValue.image));
+            object = new TransformObject(operator,params);
+            return applyTransfromFunction(object);
+        }
 }
 
 Token nakedStringToken():

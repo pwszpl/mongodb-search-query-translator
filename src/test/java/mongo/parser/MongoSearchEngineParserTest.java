@@ -56,6 +56,14 @@ class MongoSearchEngineParserTest {
     }
 
     @Test
+    void shouldEvaluateInOperator() {
+        assertBsonResult("x.y in ('a' 'b' 'c')", Filters.in("x.y",new String[] {"a","b","c"}));
+        assertBsonResult("x.y in (1 2 3)", Filters.in("x.y",new Double[] {1.0,2.0,3.0}));
+
+        assertCriteriaResult("x.y in ('a' 'b' 'c')", Criteria.where("x.y").in(new String[] {"a","b","c"}));
+        assertCriteriaResult("x.y in (1 2 3)", Criteria.where("x.y").in(new Double[] {1.0,2.0,3.0}));
+    }
+    @Test
     void shouldKeepLogicalPrecedence(){
         assertBsonResult("x.y='z' or x.y='y' and x.z=99 or x.z=1200",
                 Filters.or(
@@ -111,7 +119,8 @@ class MongoSearchEngineParserTest {
     private void assertBsonResult(String s, Bson expected){
         parser = new MongoSearchEngineParser(new StringReader(s));
         try {
-            Assertions.assertEquals(expected,parser.parse());
+            Bson result = (Bson) parser.parse();
+            Assertions.assertEquals(expected,result);
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }

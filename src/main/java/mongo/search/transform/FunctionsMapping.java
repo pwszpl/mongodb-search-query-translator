@@ -8,7 +8,8 @@ public enum FunctionsMapping {
     GT("gt"),
     LT("lt"),
     LE("lte"),
-    GE("gte");
+    GE("gte"),
+    IN("in");
 
     private String filtersFunction;
     private String criteraFunction;

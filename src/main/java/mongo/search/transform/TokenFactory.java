@@ -15,6 +15,7 @@ public class TokenFactory  {
             case LT: return getCustomToken(kind,image,FunctionsMapping.LT);
             case LE: return getCustomToken(kind,image,FunctionsMapping.LE);
             case GE: return getCustomToken(kind,image,FunctionsMapping.GE);
+            case IN: return getCustomToken(kind,image,FunctionsMapping.IN);
             default: return new Token(kind,image);
         }
     }
