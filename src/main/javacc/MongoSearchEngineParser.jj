@@ -36,6 +36,7 @@ TOKEN : { < IN : "IN" >}
 TOKEN : { < NIN : "NIN" >}
 TOKEN : { < EXISTS: "EXISTS" >}
 TOKEN : { < TYPE_FUNCTION: "TYPE" >}
+TOKEN : { < SIZE_FUNCTION: "SIZE" >}
 TOKEN : { < L_PAR : "(" >}
 TOKEN : { < R_PAR : ")" >}
 TOKEN : { < AND : "&&" | "AND" > }
@@ -48,8 +49,9 @@ TOKEN : { < LE : "<=" >}
 TOKEN : { < GE : ">=" >}
 TOKEN : { < BOOLEAN: "TRUE" | "FALSE" >}
 TOKEN : { < COMMA: "," >}
+TOKEN : { < INT_NUMBER : <DIGITS> >}
 TOKEN : { < R_NUMBER : ("-")?<NUMBER> >}
-TOKEN : { < NUMBER : <DIGITS> | <DIGITS> "." <DIGITS> | "." <DIGITS> >}
+TOKEN : { < #NUMBER : <DIGITS> | <DIGITS> "." <DIGITS> | "." <DIGITS> >}
 TOKEN : { < OBJ_FIELD : (["A"-"Z","a"-"z","0"-"9","."])+ > }
 TOKEN : {  < STRING_LITERAL : "'"  (~["\n","\r","'"])*  "'"> }
 TOKEN : { < #DIGITS : (["0"-"9"])+ > }
@@ -134,6 +136,11 @@ Object OneArgumentFunction():
         {
             return applyTransfromFunction(operator,field,functionOperator);
         }
+    |
+    operator=<SIZE_FUNCTION> <L_PAR> field=<OBJ_FIELD> <COMMA> functionOperator=<INT_NUMBER> <R_PAR>
+        {
+            return applyTransfromFunction(operator,field,functionOperator);
+        }
 }
 
 Object FieldComparision():
@@ -154,26 +161,28 @@ Object FieldComparision():
 Object evaluatFieldOperator(Token field):
 {
     Token operator;
-    Token numValue = null;
-    Token strValue = null;
+    Token value = null;
     List<Object> inList = new ArrayList();
 }
 {
     (operator=<IN> | operator=<NIN> ) <L_PAR>
         (
-       numValue=<R_NUMBER>
-       { inList.add(numValue); }
+       value=<INT_NUMBER>
+       { inList.add(value); }
        |
-       strValue= <STRING_LITERAL>
-       { inList.add(strValue); }
+       value=<R_NUMBER>
+       { inList.add(value); }
+       |
+       value= <STRING_LITERAL>
+       { inList.add(value); }
        )* <R_PAR>
     {
         return applyTransfromFunction(operator,field,inList);
     }
     |
-    (operator=<GE> | operator=<LE> | operator=<EQ> | operator=<NE> | operator=<GT> | operator=<LT>) (numValue=<R_NUMBER> | strValue= <STRING_LITERAL> )
+    (operator=<GE> | operator=<LE> | operator=<EQ> | operator=<NE> | operator=<GT> | operator=<LT>) (value=<INT_NUMBER> | value=<R_NUMBER> | value= <STRING_LITERAL> )
         {
-            return applyTransfromFunction(operator,field,numValue,strValue);
+            return applyTransfromFunction(operator,field,value);
         }
 }
 

@@ -23,6 +23,7 @@ public class TokenFactory  {
             case NIN: return getCustomToken(kind,image,FunctionsMapping.NIN);
             case EXISTS: return getCustomToken(kind,image,FunctionsMapping.EXISTS);
             case TYPE_FUNCTION: return getCustomToken(kind,image,FunctionsMapping.TYPE);
+            case SIZE_FUNCTION: return getCustomToken(kind,image,FunctionsMapping.SIZE);
             default: return new Token(kind,image);
         }
     }

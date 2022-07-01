@@ -15,7 +15,7 @@ class MongoSearchEngineParserTest {
     @Test
     void shouldEvaluateFieldComparision(){
         assertBsonResult("x.z='z'", Filters.eq("x.z","z"));
-        assertBsonResult("x.z=20", Filters.eq("x.z",20.0));
+        assertBsonResult("x.z=20", Filters.eq("x.z",20));
         assertBsonResult("x.z=20.0", Filters.eq("x.z",20.0));
         assertBsonResult("x.z>20.0", Filters.gt("x.z",20.0));
         assertBsonResult("x.z<20.0", Filters.lt("x.z",20.0));
@@ -23,7 +23,7 @@ class MongoSearchEngineParserTest {
         assertBsonResult("x.z>=20.0", Filters.gte("x.z",20.0));
 
         assertCriteriaResult("x.z='z'", Criteria.where("x.z").is("z"));
-        assertCriteriaResult("x.z=20", Criteria.where("x.z").is(20.0));
+        assertCriteriaResult("x.z=20", Criteria.where("x.z").is(20));
         assertCriteriaResult("x.z=20.0", Criteria.where("x.z").is(20.0));
         assertCriteriaResult("x.z>20.0", Criteria.where("x.z").gt(20.0));
         assertCriteriaResult("x.z<20.0", Criteria.where("x.z").lt(20.0));
@@ -53,39 +53,45 @@ class MongoSearchEngineParserTest {
     }
 
     @Test
+    void shouldEvaluteSizeFunction(){
+        assertBsonResult("size(x.z,10)", Filters.size("x.z",10));
+
+        assertCriteriaResult("size(x.z,10)", Criteria.where("x.z").size(10));
+    }
+    @Test
     void shouldEvaluateAndStatement() {
         assertBsonResult("x.y='z' and x.z='z'", Filters.and(Filters.eq("x.y","z"),Filters.eq("x.z","z")));
-        assertBsonResult("x.y='z' && x.z=99", Filters.and(Filters.eq("x.y","z"),Filters.eq("x.z",99.0)));
+        assertBsonResult("x.y='z' && x.z=99", Filters.and(Filters.eq("x.y","z"),Filters.eq("x.z",99)));
 
         assertCriteriaResult("x.y='z' and x.z='z'", new Criteria().andOperator(Criteria.where("x.y").is("z"),(Criteria.where("x.z").is("z"))));
-        assertCriteriaResult("x.y='z' && x.z=99", new Criteria().andOperator(Criteria.where("x.y").is("z"),(Criteria.where("x.z").is(99.0))));
+        assertCriteriaResult("x.y='z' && x.z=99", new Criteria().andOperator(Criteria.where("x.y").is("z"),(Criteria.where("x.z").is(99))));
     }
 
     @Test
     void shouldEvaluateOrStatement() {
         assertBsonResult("x.y='z' or x.z='z'", Filters.or(Filters.eq("x.y","z"),Filters.eq("x.z","z")));
-        assertBsonResult("x.y='z' || x.z=99", Filters.or(Filters.eq("x.y","z"),Filters.eq("x.z",99.0)));
+        assertBsonResult("x.y='z' || x.z=99", Filters.or(Filters.eq("x.y","z"),Filters.eq("x.z",99)));
 
         assertCriteriaResult("x.y='z' or x.z='z'", new Criteria().orOperator(Criteria.where("x.y").is("z"),(Criteria.where("x.z").is("z"))));
-        assertCriteriaResult("x.y='z' || x.z=99", new Criteria().orOperator(Criteria.where("x.y").is("z"),(Criteria.where("x.z").is(99.0))));
+        assertCriteriaResult("x.y='z' || x.z=99", new Criteria().orOperator(Criteria.where("x.y").is("z"),(Criteria.where("x.z").is(99))));
     }
 
     @Test
     void shouldEvaluateInOperator() {
         assertBsonResult("x.y in ('a' 'b' 'c')", Filters.in("x.y",new String[] {"a","b","c"}));
-        assertBsonResult("x.y in (1 2 3)", Filters.in("x.y",new Double[] {1.0,2.0,3.0}));
+        assertBsonResult("x.y in (1 2 3)", Filters.in("x.y",new Integer[] {1,2,3}));
 
         assertCriteriaResult("x.y in ('a' 'b' 'c')", Criteria.where("x.y").in(new String[] {"a","b","c"}));
-        assertCriteriaResult("x.y in (1 2 3)", Criteria.where("x.y").in(new Double[] {1.0,2.0,3.0}));
+        assertCriteriaResult("x.y in (1 2 3)", Criteria.where("x.y").in(new Integer[] {1,2,3}));
     }
 
     @Test
     void shouldEvaluateNinOperator() {
         assertBsonResult("x.y nin ('a' 'b' 'c')", Filters.nin("x.y",new String[] {"a","b","c"}));
-        assertBsonResult("x.y nin (1 2 3)", Filters.nin("x.y",new Double[] {1.0,2.0,3.0}));
+        assertBsonResult("x.y nin (1 2 3)", Filters.nin("x.y",new Integer[] {1,2,3}));
 
         assertCriteriaResult("x.y nin ('a' 'b' 'c')", Criteria.where("x.y").nin(new String[] {"a","b","c"}));
-        assertCriteriaResult("x.y nin (1 2 3)", Criteria.where("x.y").nin(new Double[] {1.0,2.0,3.0}));
+        assertCriteriaResult("x.y nin (1 2 3)", Criteria.where("x.y").nin(new Integer[] {1,2,3}));
     }
 
     @Test
@@ -96,10 +102,10 @@ class MongoSearchEngineParserTest {
                             Filters.eq("x.y","z"),
                             Filters.and(
                                 Filters.eq("x.y","y"),
-                                Filters.eq("x.z",99.0)
+                                Filters.eq("x.z",99)
                             )
                         ),
-                        Filters.eq("x.z",1200.0))
+                        Filters.eq("x.z",1200))
                 );
         assertBsonResult("(x.y='z' or x.y='y') and (x.z=99 or x.z=1200)",
                 Filters.and(
@@ -108,8 +114,8 @@ class MongoSearchEngineParserTest {
                                 Filters.eq("x.y","y")
                         ),
                         Filters.or(
-                                Filters.eq("x.z",99.0),
-                                Filters.eq("x.z",1200.0)
+                                Filters.eq("x.z",99),
+                                Filters.eq("x.z",1200)
                         )
                 ));
 
@@ -119,10 +125,10 @@ class MongoSearchEngineParserTest {
                                     Criteria.where("x.y").is("z"),
                                     new Criteria().andOperator(
                                             Criteria.where("x.y").is("y"),
-                                            Criteria.where("x.z").is(99.0)
+                                            Criteria.where("x.z").is(99)
                                     )
                             ),
-                            Criteria.where("x.z").is(1200.0)
+                            Criteria.where("x.z").is(1200)
                 )
         );
 
@@ -133,8 +139,8 @@ class MongoSearchEngineParserTest {
                                 Criteria.where("x.y").is("y")
                         ),
                         new Criteria().orOperator(
-                                Criteria.where("x.z").is(99.0),
-                                Criteria.where("x.z").is(1200.0)
+                                Criteria.where("x.z").is(99),
+                                Criteria.where("x.z").is(1200)
                         )
                 )
         );

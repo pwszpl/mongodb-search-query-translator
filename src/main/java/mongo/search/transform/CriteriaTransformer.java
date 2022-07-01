@@ -35,7 +35,7 @@ public class CriteriaTransformer implements Function {
         List<Object> functionParam = new ArrayList<>();
 
         // Create an initial Critera condition for field = value comparision
-        if(StringUtil.isStringInList(function,"is","ne","gt","gte","lt","lte","in","nin","exists")
+        if(StringUtil.isStringInList(function,"is","ne","gt","gte","lt","lte","in","nin","exists","size")
                 && (transform.getParams().get(0) instanceof String)){
             functionParam.add(Criteria.where((String) transform.getParams().get(0)));
 
