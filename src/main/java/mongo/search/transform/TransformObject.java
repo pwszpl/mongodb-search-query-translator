@@ -43,6 +43,9 @@ public class TransformObject {
                     return StringUtil.unescape(token).image;
                 case MongoSearchEngineParserConstants.R_NUMBER:
                     return Double.valueOf(token.image);
+                case MongoSearchEngineParserConstants.BOOLEAN:
+                    boolean val = Boolean.valueOf(token.image).booleanValue();
+                    return val;
                 case MongoSearchEngineParserConstants.OBJ_FIELD:
                     return token.image;
             }

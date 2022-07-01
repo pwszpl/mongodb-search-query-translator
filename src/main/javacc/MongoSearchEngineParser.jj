@@ -45,6 +45,8 @@ TOKEN : { < GT : ">" >}
 TOKEN : { < LT : "<" >}
 TOKEN : { < LE : "<=" >}
 TOKEN : { < GE : ">=" >}
+TOKEN : { < BOOLEAN: "TRUE" | "FALSE" >}
+TOKEN : { < COMMA: "," >}
 TOKEN : { < R_NUMBER : ("-")?<NUMBER> >}
 TOKEN : { < NUMBER : <DIGITS> | <DIGITS> "." <DIGITS> | "." <DIGITS> >}
 TOKEN : { < OBJ_FIELD : (["A"-"Z","a"-"z","0"-"9","."])+ > }
@@ -119,11 +121,12 @@ Object OneArgumentFunction():
 {
     Token operator;
     Token field;
+    Token functionOperator;
 }
 {
-    operator=<EXISTS> <L_PAR> field=<OBJ_FIELD> <R_PAR>
+    operator=<EXISTS> <L_PAR> field=<OBJ_FIELD> <COMMA> functionOperator=<BOOLEAN> <R_PAR>
     {
-        return applyTransfromFunction(operator,field);
+        return applyTransfromFunction(operator,field,functionOperator);
     }
 }
 

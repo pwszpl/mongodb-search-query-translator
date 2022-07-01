@@ -34,17 +34,13 @@ public class CriteriaTransformer implements Function {
         List<Object> functionParam = new ArrayList<>();
 
         // Create an initial Critera condition for field = value comparision
-        if(StringUtil.isStringInList(function,"is","ne","gt","gte","lt","lte","in","nin")
+        if(StringUtil.isStringInList(function,"is","ne","gt","gte","lt","lte","in","nin","exists")
                 && (transform.getParams().get(0) instanceof String)){
             functionParam.add(Criteria.where((String) transform.getParams().get(0)));
 
             for(int i=1;i<transform.getParams().size();i++){
                 functionParam.add(transform.getParams().get(i));
             }
-        }
-        // Create an initial Critera condifition for field and return true;
-        else if(StringUtil.isStringInList(function,"exists")){
-            return Criteria.where((String) transform.getParams().get(0)).exists(true);
         }
         // Create an array of Critera for andOperator/orOperator create new Criteria object
         else if(StringUtil.isStringInList(function,"andOperator","orOperator")){

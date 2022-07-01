@@ -38,9 +38,11 @@ class MongoSearchEngineParserTest {
     }
     @Test
     void shouldEvaluteExistsFunction(){
-        assertBsonResult("exists(x.z)", Filters.exists("x.z"));
+        assertBsonResult("exists(x.z,true)", Filters.exists("x.z"));
+        assertBsonResult("exists(x.z,false)", Filters.exists("x.z",false));
 
-        assertCriteriaResult("exists(x.z)", Criteria.where("x.z").exists(true));
+        assertCriteriaResult("exists(x.z,true)", Criteria.where("x.z").exists(true));
+        assertCriteriaResult("exists(x.z,false)", Criteria.where("x.z").exists(false));
     }
 
     @Test
