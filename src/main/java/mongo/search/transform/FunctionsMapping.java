@@ -11,7 +11,8 @@ public enum FunctionsMapping {
     GE("gte"),
     IN("in"),
     NIN("nin"),
-    EXISTS("exists");
+    EXISTS("exists"),
+    TYPE("type");
 
     private String filtersFunction;
     private String criteraFunction;

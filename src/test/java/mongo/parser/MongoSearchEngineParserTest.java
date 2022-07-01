@@ -5,6 +5,7 @@ import org.bson.conversions.Bson;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.schema.JsonSchemaObject;
 
 import java.io.StringReader;
 
@@ -43,6 +44,12 @@ class MongoSearchEngineParserTest {
 
         assertCriteriaResult("exists(x.z,true)", Criteria.where("x.z").exists(true));
         assertCriteriaResult("exists(x.z,false)", Criteria.where("x.z").exists(false));
+    }
+    @Test
+    void shouldEvaluteTypeFunction(){
+        assertBsonResult("type(x.z,'string')", Filters.type("x.z","string"));
+
+        assertCriteriaResult("type(x.z,'string')", Criteria.where("x.z").type(JsonSchemaObject.Type.of("string")));
     }
 
     @Test

@@ -2,6 +2,10 @@ package mongo.search.transform;
 
 import mongo.parser.Token;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+
 import static mongo.parser.MongoSearchEngineParserConstants.*;
 
 public class TokenFactory  {
@@ -18,6 +22,7 @@ public class TokenFactory  {
             case IN: return getCustomToken(kind,image,FunctionsMapping.IN);
             case NIN: return getCustomToken(kind,image,FunctionsMapping.NIN);
             case EXISTS: return getCustomToken(kind,image,FunctionsMapping.EXISTS);
+            case TYPE_FUNCTION: return getCustomToken(kind,image,FunctionsMapping.TYPE);
             default: return new Token(kind,image);
         }
     }

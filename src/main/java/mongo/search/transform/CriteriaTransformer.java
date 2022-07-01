@@ -3,6 +3,7 @@ package mongo.search.transform;
 import mongo.search.util.ReflectionUtil;
 import mongo.search.util.StringUtil;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.schema.JsonSchemaObject;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -41,6 +42,12 @@ public class CriteriaTransformer implements Function {
             for(int i=1;i<transform.getParams().size();i++){
                 functionParam.add(transform.getParams().get(i));
             }
+        }
+        else if(StringUtil.isStringInList(function,"type")){
+            functionParam.add(Criteria.where((String) transform.getParams().get(0)));
+            ArrayList types = new ArrayList();
+            types.add(JsonSchemaObject.Type.of((String) transform.getParams().get(1)));
+            functionParam.add(types);
         }
         // Create an array of Critera for andOperator/orOperator create new Criteria object
         else if(StringUtil.isStringInList(function,"andOperator","orOperator")){

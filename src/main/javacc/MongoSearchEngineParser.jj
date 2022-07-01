@@ -35,6 +35,7 @@ SKIP : {" " | "\n" | "\r" | "\r\n" }
 TOKEN : { < IN : "IN" >}
 TOKEN : { < NIN : "NIN" >}
 TOKEN : { < EXISTS: "EXISTS" >}
+TOKEN : { < TYPE_FUNCTION: "TYPE" >}
 TOKEN : { < L_PAR : "(" >}
 TOKEN : { < R_PAR : ")" >}
 TOKEN : { < AND : "&&" | "AND" > }
@@ -125,9 +126,14 @@ Object OneArgumentFunction():
 }
 {
     operator=<EXISTS> <L_PAR> field=<OBJ_FIELD> <COMMA> functionOperator=<BOOLEAN> <R_PAR>
-    {
-        return applyTransfromFunction(operator,field,functionOperator);
-    }
+        {
+            return applyTransfromFunction(operator,field,functionOperator);
+        }
+    |
+    operator=<TYPE_FUNCTION> <L_PAR> field=<OBJ_FIELD> <COMMA> functionOperator=<STRING_LITERAL> <R_PAR>
+        {
+            return applyTransfromFunction(operator,field,functionOperator);
+        }
 }
 
 Object FieldComparision():
