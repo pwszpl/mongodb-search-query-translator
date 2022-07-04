@@ -1,7 +1,10 @@
 package mongo.search.transform;
 
+import com.mongodb.client.model.Filters;
+import mongo.parser.Token;
 import mongo.search.util.ReflectionUtil;
 import mongo.search.util.StringUtil;
+import org.bson.conversions.Bson;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -11,6 +14,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import static mongo.parser.MongoSearchEngineParserConstants.NOT;
 
 public class FiltersTransformer implements Function {
     public static Class filtersClass;
@@ -38,6 +43,12 @@ public class FiltersTransformer implements Function {
                 operatorArgument.add(transform.getParams().get(i));
             }
             functionParam.add(operatorArgument);
+        } else if(ReflectionUtil.isNotOperator(transform.getParams().get(0))){
+            // if second argument is not operator we create new Transform object (without not operator) pass it through apply function to get result
+            // and finally apply not globally
+            TransformObject transformObject = new TransformObject(transform.getFunctionalToken(),transform.getParams().subList(1,transform.getParams().size()));
+            Object res = apply(transformObject);
+            return Filters.not((Bson) res);
         }
         // otherwise just add all parameters to method invoke
         else {

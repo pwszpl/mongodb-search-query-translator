@@ -41,6 +41,7 @@ TOKEN : { < L_PAR : "(" >}
 TOKEN : { < R_PAR : ")" >}
 TOKEN : { < AND : "&&" | "AND" > }
 TOKEN : { < OR : "||" | "OR" >}
+TOKEN : { < NOT : "NOT" | "!">}
 TOKEN : { < EQ : "=" >}
 TOKEN : { < NE : "<>" | "!=" | "^=" >}
 TOKEN : { < GT : ">" >}
@@ -107,20 +108,32 @@ Object AndExpression():
 Object LogicalExpression():
 {
     Object value;
-    Token token;
+    Token notOperator;
 }
 {
     <L_PAR> value = OrExpression() <R_PAR>
     {return value;}
 |
-    value = FieldComparision()
+    value = OperatorExpression(null)
     {return value;}
 |
-    value = OneArgumentFunction()
+    notOperator=<NOT> <L_PAR> value=OperatorExpression(notOperator) <R_PAR>
     {return value;}
 }
 
-Object OneArgumentFunction():
+Object OperatorExpression(Token notOperator):
+{
+    Object value;
+}
+{
+    value = FieldComparision()
+    {return value;}
+|
+    value = OneArgumentFunction(notOperator)
+    {return value;}
+}
+
+Object OneArgumentFunction(Token notOperator):
 {
     Token operator;
     Token field;
@@ -129,17 +142,17 @@ Object OneArgumentFunction():
 {
     operator=<EXISTS_FUNCTION> <L_PAR> field=<OBJ_FIELD> <COMMA> functionOperator=<BOOLEAN> <R_PAR>
         {
-            return applyTransfromFunction(operator,field,functionOperator);
+            return applyTransfromFunction(operator,notOperator,field,functionOperator);
         }
     |
     operator=<TYPE_FUNCTION> <L_PAR> field=<OBJ_FIELD> <COMMA> functionOperator=<STRING_LITERAL> <R_PAR>
         {
-            return applyTransfromFunction(operator,field,functionOperator);
+            return applyTransfromFunction(operator,notOperator,field,functionOperator);
         }
     |
     operator=<SIZE_FUNCTION> <L_PAR> field=<OBJ_FIELD> <COMMA> functionOperator=<INT_NUMBER> <R_PAR>
         {
-            return applyTransfromFunction(operator,field,functionOperator);
+            return applyTransfromFunction(operator,notOperator,field,functionOperator);
         }
 }
 

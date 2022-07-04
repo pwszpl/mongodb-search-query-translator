@@ -1,11 +1,15 @@
 package mongo.search.util;
 
+import mongo.parser.Token;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static mongo.parser.MongoSearchEngineParserConstants.NOT;
 
 public class ReflectionUtil {
     private static final Map<Class<?>, Class<?>> primitiveMap = new HashMap<>();
@@ -38,7 +42,10 @@ public class ReflectionUtil {
         return invokeMethod(method,params);
     }
 
-
+    public static boolean isNotOperator(Object o){
+        if(o instanceof Token && ((Token)o).kind == NOT) return true;
+        else return false;
+    }
 
     private static Object invokeMethod(Method m,List<Object> params){
         Object invokingObject = null;

@@ -1,5 +1,6 @@
 package mongo.search.transform;
 
+import mongo.parser.Token;
 import mongo.search.util.ReflectionUtil;
 import mongo.search.util.StringUtil;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -14,6 +15,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import static mongo.parser.MongoSearchEngineParserConstants.NOT;
 
 public class CriteriaTransformer implements Function {
     public static Class filtersClass;
@@ -34,23 +37,47 @@ public class CriteriaTransformer implements Function {
         String function = transform.getFunctionalToken().getFunctionCriteria();
         List<Object> functionParam = new ArrayList<>();
 
-        // Create an initial Critera condition for field = value comparision
-        if(StringUtil.isStringInList(function,"is","ne","gt","gte","lt","lte","in","nin","exists","size")
+        if(StringUtil.isStringInList(function,"is","ne","gt","gte","lt","lte","in","nin")
                 && (transform.getParams().get(0) instanceof String)){
             functionParam.add(Criteria.where((String) transform.getParams().get(0)));
-
+            // Create an initial Critera condition for field = value comparision
             for(int i=1;i<transform.getParams().size();i++){
                 functionParam.add(transform.getParams().get(i));
             }
         }
+        else if(StringUtil.isStringInList(function,"exists","size")){
+            Criteria where = null;
+            int startNum = 0;
+            if(ReflectionUtil.isNotOperator(transform.getParams().get(0))){
+                where = Criteria.where((String) transform.getParams().get(1)).not();
+                startNum = 2;
+            } else {
+                where = Criteria.where((String) transform.getParams().get(0));
+                startNum = 1;
+            }
+            functionParam.add(where);
+            for(int i=startNum;i<transform.getParams().size();i++){
+                functionParam.add(transform.getParams().get(i));
+            }
+        }
         else if(StringUtil.isStringInList(function,"type")){
-            functionParam.add(Criteria.where((String) transform.getParams().get(0)));
+            //type function expects list as second argument, so we create it before passing for execution
+            Criteria where = null;
+            int startNum = 0;
+            if(ReflectionUtil.isNotOperator(transform.getParams().get(0))){
+                where = Criteria.where((String) transform.getParams().get(1)).not();
+                startNum = 2;
+            } else {
+                where = Criteria.where((String) transform.getParams().get(0));
+                startNum = 1;
+            }
+            functionParam.add(where);
             ArrayList types = new ArrayList();
-            types.add(JsonSchemaObject.Type.of((String) transform.getParams().get(1)));
+            types.add(JsonSchemaObject.Type.of((String) transform.getParams().get(startNum)));
             functionParam.add(types);
         }
-        // Create an array of Critera for andOperator/orOperator create new Criteria object
         else if(StringUtil.isStringInList(function,"andOperator","orOperator")){
+            // Create an array of Critera for andOperator/orOperator
             Criteria c = new Criteria();
             functionParam.add(c);
             List<Object> criteria = new ArrayList<>();

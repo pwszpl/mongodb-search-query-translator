@@ -75,7 +75,14 @@ class MongoSearchEngineParserTest {
         assertCriteriaResult("x.y='z' or x.z='z'", new Criteria().orOperator(Criteria.where("x.y").is("z"),(Criteria.where("x.z").is("z"))));
         assertCriteriaResult("x.y='z' || x.z=99", new Criteria().orOperator(Criteria.where("x.y").is("z"),(Criteria.where("x.z").is(99))));
     }
+    @Test
+    void shouldEvaluateNotStatement(){
+        assertBsonResult("not(exists(x.z,true))", Filters.not(Filters.exists("x.z")));
+        assertBsonResult("!(type(x.z,'string'))", Filters.not(Filters.type("x.z","string")));
 
+        assertCriteriaResult("not(exists(x.z,true))", Criteria.where("x.z").not().exists(true));
+        assertCriteriaResult("!(type(x.z,'string'))", Criteria.where("x.z").not().type(JsonSchemaObject.Type.of("string")));
+    }
     @Test
     void shouldEvaluateInOperator() {
         assertBsonResult("x.y in ('a' 'b' 'c')", Filters.in("x.y",new String[] {"a","b","c"}));
