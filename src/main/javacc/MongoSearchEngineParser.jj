@@ -34,6 +34,7 @@ SKIP : {" " | "\n" | "\r" | "\r\n" }
 
 TOKEN : { < IN : "IN" >}
 TOKEN : { < NIN : "NIN" >}
+TOKEN : { < ALL : "ALL" >}
 TOKEN : { < LIKE : "LIKE" >}
 TOKEN : { < EXISTS_FUNCTION: "EXISTS" >}
 TOKEN : { < TYPE_FUNCTION: "TYPE" >}
@@ -210,7 +211,7 @@ Object evaluatFieldOperator(Token field):
     List<Object> inList = new ArrayList();
 }
 {
-    (operator=<IN> | operator=<NIN> ) <L_PAR>
+    (operator=<IN> | operator=<NIN> | operator=<ALL> ) <L_PAR>
         (
        value=<INT_NUMBER>
        { inList.add(value); }

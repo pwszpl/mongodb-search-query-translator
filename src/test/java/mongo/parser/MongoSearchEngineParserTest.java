@@ -124,6 +124,15 @@ class MongoSearchEngineParserTest {
     }
 
     @Test
+    void shouldEvaluateAllOperator() {
+        assertBsonResult("x.y all ('a' 'b' 'c')", Filters.all("x.y",new String[] {"a","b","c"}));
+        assertBsonResult("x.y all (1 2 3)", Filters.all("x.y",new Integer[] {1,2,3}));
+
+        assertCriteriaResult("x.y all ('a' 'b' 'c')", Criteria.where("x.y").all(new String[] {"a","b","c"}));
+        assertCriteriaResult("x.y all (1 2 3)", Criteria.where("x.y").all(new Integer[] {1,2,3}));
+    }
+
+    @Test
     void shouldKeepLogicalPrecedence(){
         assertBsonResult("x.y='z' or x.y='y' and x.z=99 or x.z=1200",
                 Filters.or(

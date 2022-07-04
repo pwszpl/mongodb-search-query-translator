@@ -12,6 +12,7 @@ public enum FunctionsMapping {
     GE("gte"),
     IN("in"),
     NIN("nin"),
+    ALL("all"),
     EXISTS("exists"),
     TYPE("type"),
     SIZE("size"),
