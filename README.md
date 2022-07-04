@@ -73,11 +73,11 @@ Table below shows support for [Filters](https://www.mongodb.com/docs/drivers/jav
 | empty                 | no        |                                                 |                          |
 | **Logical**           |           |                                                 |                          |
 | and                   | yes       | `and`, `&&`                                     | x.y = 1 and x.z = 'abc'  |
-| or                    | yes       | `or`, `\|\|`                                    | x.y = 1 or x.z = 'abc'   |
+| or                    | yes       | `or`, `\                                        | \                        |`                                    | x.y = 1 or x.z = 'abc'   |
 | not                   | yes       | `not(<FIELD_OPERATOR>)`                         | not(exists(x.y) = false) |
 | nor                   | yes       | `nor`                                           | x.y = 1 nor x.z = 'abc'  |
 | **Arrays**            |           |                                                 |                          |
-| all                   | no        |                                                 |                          |
+| all                   | no        | `<FIELD_NAME> ALL ( <LITERAL> )`                 | x.y all (1 2 3)          |
 | elemMatch             | no        |                                                 |                          |
 | size                  | yes       | `size(<FIELD_NAME>) = <INT_NUMBER>`             | size(x.y) =6             |
 | **Elements**          |           |                                                 |                          |
