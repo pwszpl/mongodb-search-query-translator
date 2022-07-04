@@ -37,7 +37,7 @@ public class FiltersTransformer implements Function {
         List<Object> functionParam = new ArrayList<>();
 
         // Create an array of Filters for and/or methods and add as an arguemnt to method invoke
-        if(StringUtil.isStringInList(function,"and","or")){
+        if(StringUtil.isStringInList(function,"and","or","nor")){
             List<Object> operatorArgument = new ArrayList<>();
             for(int i=0;i<transform.getParams().size();i++){
                 operatorArgument.add(transform.getParams().get(i));

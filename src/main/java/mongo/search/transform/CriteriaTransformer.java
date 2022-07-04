@@ -76,7 +76,7 @@ public class CriteriaTransformer implements Function {
             types.add(JsonSchemaObject.Type.of((String) transform.getParams().get(startNum)));
             functionParam.add(types);
         }
-        else if(StringUtil.isStringInList(function,"andOperator","orOperator")){
+        else if(StringUtil.isStringInList(function,"andOperator","orOperator","norOperator")){
             // Create an array of Critera for andOperator/orOperator
             Criteria c = new Criteria();
             functionParam.add(c);

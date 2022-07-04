@@ -41,6 +41,7 @@ TOKEN : { < L_PAR : "(" >}
 TOKEN : { < R_PAR : ")" >}
 TOKEN : { < AND : "&&" | "AND" > }
 TOKEN : { < OR : "||" | "OR" >}
+TOKEN : { < NOR : "NOR" >}
 TOKEN : { < NOT : "NOT" | "!">}
 TOKEN : { < EQ : "=" >}
 TOKEN : { < NE : "<>" | "!=" | "^=" >}
@@ -57,15 +58,36 @@ TOKEN : { < OBJ_FIELD : (["A"-"Z","a"-"z","0"-"9","."])+ > }
 TOKEN : {  < STRING_LITERAL : "'"  (~["\n","\r","'"])*  "'"> }
 TOKEN : { < #DIGITS : (["0"-"9"])+ > }
 
+
 Object parse():
 {
     Object result;
 }
 {
-    result = OrExpression()
+    result = NorExpression()
     <EOF>
     {return result;}
 }
+
+Object NorExpression():
+{
+     Object value = null;
+     Object result;
+     Token operator = null;
+}
+{
+    value = OrExpression()
+    {result = value;}
+    (
+        operator=<NOR>
+        value = OrExpression()
+        {
+            result = applyTransfromFunction(operator,result,value);
+        }
+    )*
+    {return result;}
+}
+
 
 Object OrExpression():
 {

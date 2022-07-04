@@ -5,6 +5,7 @@ public enum FunctionsMapping {
     NE("ne"),
     AND("and","andOperator"),
     OR("or","orOperator"),
+    NOR("nor","norOperator"),
     GT("gt"),
     LT("lt"),
     LE("lte"),

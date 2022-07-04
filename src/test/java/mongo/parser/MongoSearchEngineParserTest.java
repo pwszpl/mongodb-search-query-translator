@@ -76,6 +76,14 @@ class MongoSearchEngineParserTest {
         assertCriteriaResult("x.y='z' || x.z=99", new Criteria().orOperator(Criteria.where("x.y").is("z"),(Criteria.where("x.z").is(99))));
     }
     @Test
+    void shouldEvaluateNorStatement() {
+        assertBsonResult("x.y='z' NOR x.z='z'", Filters.nor(Filters.eq("x.y","z"),Filters.eq("x.z","z")));
+        assertBsonResult("x.y='z' NOR x.z=99", Filters.nor(Filters.eq("x.y","z"),Filters.eq("x.z",99)));
+
+        assertCriteriaResult("x.y='z' NOR x.z='z'", new Criteria().norOperator(Criteria.where("x.y").is("z"),(Criteria.where("x.z").is("z"))));
+        assertCriteriaResult("x.y='z' NOR x.z=99", new Criteria().norOperator(Criteria.where("x.y").is("z"),(Criteria.where("x.z").is(99))));
+    }
+    @Test
     void shouldEvaluateNotStatement(){
         assertBsonResult("not(exists(x.z,true))", Filters.not(Filters.exists("x.z")));
         assertBsonResult("!(type(x.z,'string'))", Filters.not(Filters.type("x.z","string")));
