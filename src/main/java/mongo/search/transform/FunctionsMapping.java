@@ -15,7 +15,8 @@ public enum FunctionsMapping {
     EXISTS("exists"),
     TYPE("type"),
     SIZE("size"),
-    LIKE("regex");
+    LIKE("regex"),
+    MOD("mod");
 
     private String filtersFunction;
     private String criteraFunction;

@@ -38,6 +38,7 @@ TOKEN : { < LIKE : "LIKE" >}
 TOKEN : { < EXISTS_FUNCTION: "EXISTS" >}
 TOKEN : { < TYPE_FUNCTION: "TYPE" >}
 TOKEN : { < SIZE_FUNCTION: "SIZE" >}
+TOKEN : { < MOD_FUNCTION: "MOD" >}
 TOKEN : { < L_PAR : "(" >}
 TOKEN : { < R_PAR : ")" >}
 TOKEN : { < AND : "&&" | "AND" > }
@@ -163,21 +164,27 @@ Object OneArgumentFunction(Token notOperator):
     Token operator;
     Token field;
     Token functionOperator;
+    Token resultValue;
 }
 {
-    operator=<EXISTS_FUNCTION> <L_PAR> field=<OBJ_FIELD> <R_PAR> <EQ> functionOperator=<BOOLEAN>
+    operator=<EXISTS_FUNCTION> <L_PAR> field=<OBJ_FIELD> <R_PAR> <EQ> resultValue=<BOOLEAN>
         {
-            return applyTransfromFunction(operator,notOperator,field,functionOperator);
+            return applyTransfromFunction(operator,notOperator,field,resultValue);
         }
     |
-    operator=<TYPE_FUNCTION> <L_PAR> field=<OBJ_FIELD> <R_PAR> <EQ> functionOperator=<STRING_LITERAL>
+    operator=<TYPE_FUNCTION> <L_PAR> field=<OBJ_FIELD> <R_PAR> <EQ> resultValue=<STRING_LITERAL>
         {
-            return applyTransfromFunction(operator,notOperator,field,functionOperator);
+            return applyTransfromFunction(operator,notOperator,field,resultValue);
         }
     |
-    operator=<SIZE_FUNCTION> <L_PAR> field=<OBJ_FIELD> <R_PAR> <EQ> functionOperator=<INT_NUMBER>
+    operator=<SIZE_FUNCTION> <L_PAR> field=<OBJ_FIELD> <R_PAR> <EQ> resultValue=<INT_NUMBER>
         {
-            return applyTransfromFunction(operator,notOperator,field,functionOperator);
+            return applyTransfromFunction(operator,notOperator,field,resultValue);
+        }
+    |
+    operator=<MOD_FUNCTION> <L_PAR> field=<OBJ_FIELD> <COMMA> functionOperator=<INT_NUMBER> <R_PAR> <EQ> resultValue=<INT_NUMBER>
+        {
+            return applyTransfromFunction(operator,notOperator,field,functionOperator,resultValue);
         }
 }
 

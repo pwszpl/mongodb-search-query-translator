@@ -43,7 +43,7 @@ public class CriteriaTransformer implements Function {
                 functionParam.add(transform.getParams().get(i));
             }
         }
-        else if(StringUtil.isStringInList(function,"exists","size","regex")){
+        else if(StringUtil.isStringInList(function,"exists","size","regex","mod")){
             Criteria where = null;
             int startNum = 0;
             if(ReflectionUtil.isNotOperator(transform.getParams().get(0))){

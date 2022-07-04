@@ -65,6 +65,13 @@ class MongoSearchEngineParserTest {
 
         assertCriteriaResult("x.y like 'abc'", new Criteria("x.y").regex("abc"));
     }
+
+    @Test
+    void shouldEvaluateModFunction(){
+        assertBsonResult("mod(x.z,2) = 1", Filters.mod("x.z",2,1));
+
+        assertCriteriaResult("mod(x.z,2) = 1", Criteria.where("x.z").mod(2,1));
+    }
     @Test
     void shouldEvaluateAndStatement() {
         assertBsonResult("x.y='z' and x.z='z'", Filters.and(Filters.eq("x.y","z"),Filters.eq("x.z","z")));
