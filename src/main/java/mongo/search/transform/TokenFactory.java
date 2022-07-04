@@ -25,6 +25,7 @@ public class TokenFactory  {
             case TYPE_FUNCTION: return getCustomToken(kind,image,FunctionsMapping.TYPE);
             case SIZE_FUNCTION: return getCustomToken(kind,image,FunctionsMapping.SIZE);
             case NOR: return getCustomToken(kind,image,FunctionsMapping.NOR);
+            case LIKE: return getCustomToken(kind,image,FunctionsMapping.LIKE);
             default: return new Token(kind,image);
         }
     }

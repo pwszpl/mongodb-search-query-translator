@@ -14,7 +14,8 @@ public enum FunctionsMapping {
     NIN("nin"),
     EXISTS("exists"),
     TYPE("type"),
-    SIZE("size");
+    SIZE("size"),
+    LIKE("regex");
 
     private String filtersFunction;
     private String criteraFunction;

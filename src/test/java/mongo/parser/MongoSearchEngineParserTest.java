@@ -58,6 +58,13 @@ class MongoSearchEngineParserTest {
 
         assertCriteriaResult("size(x.z,10)", Criteria.where("x.z").size(10));
     }
+
+    @Test
+    void shouldEvaluateRegexFunction(){
+        assertBsonResult("x.y like 'abc'", Filters.regex("x.y","abc"));
+
+        assertCriteriaResult("x.y like 'abc'", new Criteria("x.y").regex("abc"));
+    }
     @Test
     void shouldEvaluateAndStatement() {
         assertBsonResult("x.y='z' and x.z='z'", Filters.and(Filters.eq("x.y","z"),Filters.eq("x.z","z")));
@@ -177,7 +184,7 @@ class MongoSearchEngineParserTest {
         parser.setCriteraMode();
         try {
             Criteria c = (Criteria)parser.parse();
-            Assertions.assertEquals(expected.getCriteriaObject(),c.getCriteriaObject());
+            Assertions.assertEquals(expected.getCriteriaObject().toBsonDocument().toJson(),c.getCriteriaObject().toBsonDocument().toJson());
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }

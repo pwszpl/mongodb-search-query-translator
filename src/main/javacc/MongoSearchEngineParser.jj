@@ -34,6 +34,7 @@ SKIP : {" " | "\n" | "\r" | "\r\n" }
 
 TOKEN : { < IN : "IN" >}
 TOKEN : { < NIN : "NIN" >}
+TOKEN : { < LIKE : "LIKE" >}
 TOKEN : { < EXISTS_FUNCTION: "EXISTS" >}
 TOKEN : { < TYPE_FUNCTION: "TYPE" >}
 TOKEN : { < SIZE_FUNCTION: "SIZE" >}
@@ -146,6 +147,7 @@ Object LogicalExpression():
 Object OperatorExpression(Token notOperator):
 {
     Object value;
+    Token operator = null;
 }
 {
     value = FieldComparision()
@@ -153,6 +155,7 @@ Object OperatorExpression(Token notOperator):
 |
     value = OneArgumentFunction(notOperator)
     {return value;}
+
 }
 
 Object OneArgumentFunction(Token notOperator):
@@ -216,6 +219,11 @@ Object evaluatFieldOperator(Token field):
     }
     |
     (operator=<GE> | operator=<LE> | operator=<EQ> | operator=<NE> | operator=<GT> | operator=<LT>) (value=<INT_NUMBER> | value=<R_NUMBER> | value= <STRING_LITERAL> )
+        {
+            return applyTransfromFunction(operator,field,value);
+        }
+    |
+    operator=<LIKE> value=<STRING_LITERAL>
         {
             return applyTransfromFunction(operator,field,value);
         }

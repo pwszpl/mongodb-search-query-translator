@@ -16,8 +16,6 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static mongo.parser.MongoSearchEngineParserConstants.NOT;
-
 public class CriteriaTransformer implements Function {
     public static Class filtersClass;
     public static Map<String, List<Method>> filtersMethods;
@@ -45,7 +43,7 @@ public class CriteriaTransformer implements Function {
                 functionParam.add(transform.getParams().get(i));
             }
         }
-        else if(StringUtil.isStringInList(function,"exists","size")){
+        else if(StringUtil.isStringInList(function,"exists","size","regex")){
             Criteria where = null;
             int startNum = 0;
             if(ReflectionUtil.isNotOperator(transform.getParams().get(0))){
