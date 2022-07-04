@@ -1,3 +1,11 @@
+# 0.3.0
+* added support for following functions:
+  * mod
+  * regex
+  * nor
+  * not
+* changed lexical structure for SIZE, TYPE, EXISTS functions
+
 # 0.2.0
 * added support for following functions:
   * size
