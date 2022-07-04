@@ -34,7 +34,7 @@ SKIP : {" " | "\n" | "\r" | "\r\n" }
 
 TOKEN : { < IN : "IN" >}
 TOKEN : { < NIN : "NIN" >}
-TOKEN : { < EXISTS: "EXISTS" >}
+TOKEN : { < EXISTS_FUNCTION: "EXISTS" >}
 TOKEN : { < TYPE_FUNCTION: "TYPE" >}
 TOKEN : { < SIZE_FUNCTION: "SIZE" >}
 TOKEN : { < L_PAR : "(" >}
@@ -127,7 +127,7 @@ Object OneArgumentFunction():
     Token functionOperator;
 }
 {
-    operator=<EXISTS> <L_PAR> field=<OBJ_FIELD> <COMMA> functionOperator=<BOOLEAN> <R_PAR>
+    operator=<EXISTS_FUNCTION> <L_PAR> field=<OBJ_FIELD> <COMMA> functionOperator=<BOOLEAN> <R_PAR>
         {
             return applyTransfromFunction(operator,field,functionOperator);
         }
