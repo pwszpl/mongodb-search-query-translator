@@ -165,17 +165,17 @@ Object OneArgumentFunction(Token notOperator):
     Token functionOperator;
 }
 {
-    operator=<EXISTS_FUNCTION> <L_PAR> field=<OBJ_FIELD> <COMMA> functionOperator=<BOOLEAN> <R_PAR>
+    operator=<EXISTS_FUNCTION> <L_PAR> field=<OBJ_FIELD> <R_PAR> <EQ> functionOperator=<BOOLEAN>
         {
             return applyTransfromFunction(operator,notOperator,field,functionOperator);
         }
     |
-    operator=<TYPE_FUNCTION> <L_PAR> field=<OBJ_FIELD> <COMMA> functionOperator=<STRING_LITERAL> <R_PAR>
+    operator=<TYPE_FUNCTION> <L_PAR> field=<OBJ_FIELD> <R_PAR> <EQ> functionOperator=<STRING_LITERAL>
         {
             return applyTransfromFunction(operator,notOperator,field,functionOperator);
         }
     |
-    operator=<SIZE_FUNCTION> <L_PAR> field=<OBJ_FIELD> <COMMA> functionOperator=<INT_NUMBER> <R_PAR>
+    operator=<SIZE_FUNCTION> <L_PAR> field=<OBJ_FIELD> <R_PAR> <EQ> functionOperator=<INT_NUMBER>
         {
             return applyTransfromFunction(operator,notOperator,field,functionOperator);
         }

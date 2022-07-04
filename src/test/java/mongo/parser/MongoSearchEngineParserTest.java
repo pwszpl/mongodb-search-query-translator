@@ -39,24 +39,24 @@ class MongoSearchEngineParserTest {
     }
     @Test
     void shouldEvaluteExistsFunction(){
-        assertBsonResult("exists(x.z,true)", Filters.exists("x.z"));
-        assertBsonResult("exists(x.z,false)", Filters.exists("x.z",false));
+        assertBsonResult("exists(x.z) = true", Filters.exists("x.z"));
+        assertBsonResult("exists(x.z) = false", Filters.exists("x.z",false));
 
-        assertCriteriaResult("exists(x.z,true)", Criteria.where("x.z").exists(true));
-        assertCriteriaResult("exists(x.z,false)", Criteria.where("x.z").exists(false));
+        assertCriteriaResult("exists(x.z) = true", Criteria.where("x.z").exists(true));
+        assertCriteriaResult("exists(x.z) = false", Criteria.where("x.z").exists(false));
     }
     @Test
     void shouldEvaluteTypeFunction(){
-        assertBsonResult("type(x.z,'string')", Filters.type("x.z","string"));
+        assertBsonResult("type(x.z) = 'string'", Filters.type("x.z","string"));
 
-        assertCriteriaResult("type(x.z,'string')", Criteria.where("x.z").type(JsonSchemaObject.Type.of("string")));
+        assertCriteriaResult("type(x.z) = 'string'", Criteria.where("x.z").type(JsonSchemaObject.Type.of("string")));
     }
 
     @Test
     void shouldEvaluteSizeFunction(){
-        assertBsonResult("size(x.z,10)", Filters.size("x.z",10));
+        assertBsonResult("size(x.z) = 10", Filters.size("x.z",10));
 
-        assertCriteriaResult("size(x.z,10)", Criteria.where("x.z").size(10));
+        assertCriteriaResult("size(x.z) = 10", Criteria.where("x.z").size(10));
     }
 
     @Test
@@ -92,11 +92,11 @@ class MongoSearchEngineParserTest {
     }
     @Test
     void shouldEvaluateNotStatement(){
-        assertBsonResult("not(exists(x.z,true))", Filters.not(Filters.exists("x.z")));
-        assertBsonResult("!(type(x.z,'string'))", Filters.not(Filters.type("x.z","string")));
+        assertBsonResult("not(exists(x.z) = true)", Filters.not(Filters.exists("x.z")));
+        assertBsonResult("!(type(x.z) = 'string')", Filters.not(Filters.type("x.z","string")));
 
-        assertCriteriaResult("not(exists(x.z,true))", Criteria.where("x.z").not().exists(true));
-        assertCriteriaResult("!(type(x.z,'string'))", Criteria.where("x.z").not().type(JsonSchemaObject.Type.of("string")));
+        assertCriteriaResult("not(exists(x.z) = true)", Criteria.where("x.z").not().exists(true));
+        assertCriteriaResult("!(type(x.z) = 'string')", Criteria.where("x.z").not().type(JsonSchemaObject.Type.of("string")));
     }
     @Test
     void shouldEvaluateInOperator() {
