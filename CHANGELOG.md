@@ -1,3 +1,12 @@
+# 0.4.0
+* added support for following functions:
+  * all
+  * elemMatch
+* changes in tests:
+  * created TestBuilder class to make tests easier to maintain
+  * added tests with query execution on DB container
+* moved HashMaps initialization for CriteriaTransformer and BsonTransformer to constructors instead of making static initalization
+
 # 0.3.0
 * added support for following functions:
   * mod
