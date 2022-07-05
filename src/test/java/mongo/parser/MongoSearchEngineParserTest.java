@@ -1,167 +1,325 @@
 package mongo.parser;
 
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
+import mongo.util.TestBuilder;
+import org.bson.Document;
 import org.bson.conversions.Bson;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.schema.JsonSchemaObject;
+import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.MongoDBContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.utility.DockerImageName;
 
 import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 class MongoSearchEngineParserTest {
     private static MongoSearchEngineParser parser;
 
+    private static MongoCollection<Document> collection;
+
+    @Container
+    static final MongoDBContainer mongo = new MongoDBContainer(DockerImageName.parse("mongo:4.4"));
+
+    @BeforeAll
+    static void setUpData(){
+        mongo.start();
+        MongoClient mongoClient = MongoClients.create(mongo.getConnectionString());
+        MongoDatabase database = mongoClient.getDatabase("test");
+        collection = database.getCollection("testCollection");
+
+        TestBuilder.setCollection(collection);
+    }
+
+    @AfterAll
+    static void tearDown(){
+        mongo.stop();
+    }
+
+    @AfterEach
+    void dropCollection(){
+        collection.drop();
+    }
+
     @Test
     void shouldEvaluateFieldComparision(){
-        assertBsonResult("x.z='z'", Filters.eq("x.z","z"));
-        assertBsonResult("x.z=20", Filters.eq("x.z",20));
-        assertBsonResult("x.z=20.0", Filters.eq("x.z",20.0));
-        assertBsonResult("x.z>20.0", Filters.gt("x.z",20.0));
-        assertBsonResult("x.z<20.0", Filters.lt("x.z",20.0));
-        assertBsonResult("x.z<=20.0", Filters.lte("x.z",20.0));
-        assertBsonResult("x.z>=20.0", Filters.gte("x.z",20.0));
+        collection.insertOne(new Document("stringField","testString").append("numField",100));
+        collection.insertOne(new Document("stringField","testString").append("numField",20));
+        collection.insertOne(new Document("stringField","testString3").append("numField",0));
 
-        assertCriteriaResult("x.z='z'", Criteria.where("x.z").is("z"));
-        assertCriteriaResult("x.z=20", Criteria.where("x.z").is(20));
-        assertCriteriaResult("x.z=20.0", Criteria.where("x.z").is(20.0));
-        assertCriteriaResult("x.z>20.0", Criteria.where("x.z").gt(20.0));
-        assertCriteriaResult("x.z<20.0", Criteria.where("x.z").lt(20.0));
-        assertCriteriaResult("x.z<=20.0", Criteria.where("x.z").lte(20.0));
-        assertCriteriaResult("x.z>=20.0", Criteria.where("x.z").gte(20.0));
+        TestBuilder.build("stringField='z'")
+                .assertBsonResult(Filters.eq("stringField","z"))
+                .assertBsonDbResult(0)
+                .assertCriteriaResult(Criteria.where("stringField").is("z"));
+
+        TestBuilder.build("stringField<>'z'")
+                .assertBsonResult(Filters.ne("stringField","z"))
+                .assertBsonDbResult(3)
+                .assertCriteriaResult(Criteria.where("stringField").ne("z"));
+
+        TestBuilder.build("numField=20")
+                .assertBsonResult(Filters.eq("numField",20))
+                .assertBsonDbResult(1)
+                .assertCriteriaResult(Criteria.where("numField").is(20));
+
+        TestBuilder.build("numField<>20")
+                .assertBsonResult(Filters.ne("numField",20))
+                .assertBsonDbResult(2)
+                .assertCriteriaResult(Criteria.where("numField").ne(20));
+
+        TestBuilder.build("numField>20.0")
+                .assertBsonResult(Filters.gt("numField",20.0))
+                .assertBsonDbResult(1)
+                .assertCriteriaResult(Criteria.where("numField").gt(20.0));
+
+        TestBuilder.build("numField<20.0")
+                .assertBsonResult(Filters.lt("numField",20.0))
+                .assertBsonDbResult(1)
+                .assertCriteriaResult(Criteria.where("numField").lt(20.0));
+
+        TestBuilder.build("numField<=20.0")
+                .assertBsonResult(Filters.lte("numField",20.0))
+                .assertBsonDbResult(2)
+                .assertCriteriaResult(Criteria.where("numField").lte(20.0));
+
+        TestBuilder.build("numField>=20.0")
+                .assertBsonResult(Filters.gte("numField",20.0))
+                .assertBsonDbResult(2)
+                .assertCriteriaResult(Criteria.where("numField").gte(20.0));
     }
 
     @Test
     void shouldEvaluteNegativeNumbers(){
-        assertBsonResult("x.z=-10", Filters.eq("x.z",-10.0));
+        collection.insertOne(new Document("stringField","testString").append("numField",100));
+        collection.insertOne(new Document("stringField","testString").append("numField",20));
+        collection.insertOne(new Document("stringField","testString3").append("numField",0));
 
-        assertCriteriaResult("x.z=-10", Criteria.where("x.z").is(-10.0));
+        TestBuilder.build("numField=-10")
+                .assertBsonResult(Filters.eq("numField",-10.0))
+                .assertBsonDbResult(0)
+                .assertCriteriaResult( Criteria.where("numField").is(-10.0));
     }
     @Test
     void shouldEvaluteExistsFunction(){
-        assertBsonResult("exists(x.z) = true", Filters.exists("x.z"));
-        assertBsonResult("exists(x.z) = false", Filters.exists("x.z",false));
+        collection.insertOne(new Document("stringField","testString").append("numField",100));
+        collection.insertOne(new Document("stringField","testString").append("numField",20));
+        collection.insertOne(new Document("stringField","testString3").append("numField",0));
 
-        assertCriteriaResult("exists(x.z) = true", Criteria.where("x.z").exists(true));
-        assertCriteriaResult("exists(x.z) = false", Criteria.where("x.z").exists(false));
+        TestBuilder.build("exists(stringField) = true")
+                .assertBsonResult(Filters.exists("stringField",true))
+                .assertBsonDbResult(3)
+                .assertCriteriaResult(Criteria.where("stringField").exists(true));
+
+        TestBuilder.build("exists(stringField) = false")
+                .assertBsonResult(Filters.exists("stringField",false))
+                .assertBsonDbResult(0)
+                .assertCriteriaResult(Criteria.where("stringField").exists(false));
     }
     @Test
     void shouldEvaluteTypeFunction(){
-        assertBsonResult("type(x.z) = 'string'", Filters.type("x.z","string"));
+        collection.insertOne(new Document("stringField","testString").append("numField",100));
+        collection.insertOne(new Document("stringField","testString").append("numField",20));
+        collection.insertOne(new Document("stringField","testString3").append("numField",0));
 
-        assertCriteriaResult("type(x.z) = 'string'", Criteria.where("x.z").type(JsonSchemaObject.Type.of("string")));
+        TestBuilder.build("type(stringField) = 'string'")
+                .assertBsonResult(Filters.type("stringField","string"))
+                .assertBsonDbResult(3)
+                .assertCriteriaResult( Criteria.where("stringField").type(JsonSchemaObject.Type.of("string")));
     }
 
     @Test
     void shouldEvaluteSizeFunction(){
-        assertBsonResult("size(x.z) = 10", Filters.size("x.z",10));
+        collection.insertOne(new Document("title","array1").append("arrayField",Arrays.stream(new Integer[]{1,2,3}).collect(Collectors.toList())));
+        collection.insertOne(new Document("title","array2").append("arrayField",Arrays.stream(new String[]{"a","b","c"}).collect(Collectors.toList())));
 
-        assertCriteriaResult("size(x.z) = 10", Criteria.where("x.z").size(10));
+        TestBuilder.build("size(arrayField) = 3")
+                .assertBsonResult(Filters.size("arrayField",3))
+                .assertBsonDbResult(2)
+                .assertCriteriaResult( Criteria.where("arrayField").size(3));
     }
 
     @Test
     void shouldEvaluateRegexFunction(){
-        assertBsonResult("x.y like 'abc'", Filters.regex("x.y","abc"));
+        collection.insertOne(new Document("stringField","testString").append("numField",100));
+        collection.insertOne(new Document("stringField","testString").append("numField",20));
+        collection.insertOne(new Document("stringField","testString3").append("numField",0));
 
-        assertCriteriaResult("x.y like 'abc'", new Criteria("x.y").regex("abc"));
+        TestBuilder.build("stringField like 'testString.*'")
+                .assertBsonResult(Filters.regex("stringField","testString.*"))
+                .assertBsonDbResult(3)
+                .assertCriteriaResult(new Criteria("stringField").regex("testString.*"));
     }
 
     @Test
     void shouldEvaluateModFunction(){
-        assertBsonResult("mod(x.z,2) = 1", Filters.mod("x.z",2,1));
+        collection.insertOne(new Document("stringField","testString").append("numField",100));
+        collection.insertOne(new Document("stringField","testString").append("numField",21));
 
-        assertCriteriaResult("mod(x.z,2) = 1", Criteria.where("x.z").mod(2,1));
+        TestBuilder.build("mod(numField,2) = 1")
+                .assertBsonResult(Filters.mod("numField",2,1))
+                .assertBsonDbResult(1)
+                .assertCriteriaResult(Criteria.where("numField").mod(2,1));
     }
     @Test
     void shouldEvaluateAndStatement() {
-        assertBsonResult("x.y='z' and x.z='z'", Filters.and(Filters.eq("x.y","z"),Filters.eq("x.z","z")));
-        assertBsonResult("x.y='z' && x.z=99", Filters.and(Filters.eq("x.y","z"),Filters.eq("x.z",99)));
+        collection.insertOne(new Document("stringField","testString").append("numField",100));
+        collection.insertOne(new Document("stringField","testString").append("numField",20));
+        collection.insertOne(new Document("stringField","testString3").append("numField",0));
 
-        assertCriteriaResult("x.y='z' and x.z='z'", new Criteria().andOperator(Criteria.where("x.y").is("z"),(Criteria.where("x.z").is("z"))));
-        assertCriteriaResult("x.y='z' && x.z=99", new Criteria().andOperator(Criteria.where("x.y").is("z"),(Criteria.where("x.z").is(99))));
+        TestBuilder.build("stringField='testString' and numField=100")
+                .assertBsonResult(Filters.and(Filters.eq("stringField","testString"),Filters.eq("numField",100)))
+                .assertBsonDbResult(1)
+                .assertCriteriaResult(new Criteria().andOperator(Criteria.where("stringField").is("testString"),(Criteria.where("numField").is(100))));
+
+        TestBuilder.build("stringField='testString' and numField=99")
+                .assertBsonResult(Filters.and(Filters.eq("stringField","testString"),Filters.eq("numField",99)))
+                .assertBsonDbResult(0)
+                .assertCriteriaResult(new Criteria().andOperator(Criteria.where("stringField").is("testString"),(Criteria.where("numField").is(99))));
     }
 
     @Test
     void shouldEvaluateOrStatement() {
-        assertBsonResult("x.y='z' or x.z='z'", Filters.or(Filters.eq("x.y","z"),Filters.eq("x.z","z")));
-        assertBsonResult("x.y='z' || x.z=99", Filters.or(Filters.eq("x.y","z"),Filters.eq("x.z",99)));
+        collection.insertOne(new Document("stringField","testString").append("numField",100));
+        collection.insertOne(new Document("stringField","testString").append("numField",20));
+        collection.insertOne(new Document("stringField","testString3").append("numField",0));
 
-        assertCriteriaResult("x.y='z' or x.z='z'", new Criteria().orOperator(Criteria.where("x.y").is("z"),(Criteria.where("x.z").is("z"))));
-        assertCriteriaResult("x.y='z' || x.z=99", new Criteria().orOperator(Criteria.where("x.y").is("z"),(Criteria.where("x.z").is(99))));
+        TestBuilder.build("stringField='testString' or numField=0")
+                .assertBsonResult(Filters.or(Filters.eq("stringField","testString"),Filters.eq("numField",0)))
+                .assertBsonDbResult(3)
+                .assertCriteriaResult(new Criteria().orOperator(Criteria.where("stringField").is("testString"),(Criteria.where("numField").is(0))));
+
+        TestBuilder.build("stringField='testString2' or numField=99")
+                .assertBsonResult(Filters.or(Filters.eq("stringField","testString2"),Filters.eq("numField",99)))
+                .assertBsonDbResult(0)
+                .assertCriteriaResult(new Criteria().orOperator(Criteria.where("stringField").is("testString2"),(Criteria.where("numField").is(99))));
     }
     @Test
     void shouldEvaluateNorStatement() {
-        assertBsonResult("x.y='z' NOR x.z='z'", Filters.nor(Filters.eq("x.y","z"),Filters.eq("x.z","z")));
-        assertBsonResult("x.y='z' NOR x.z=99", Filters.nor(Filters.eq("x.y","z"),Filters.eq("x.z",99)));
+        collection.insertOne(new Document("stringField","testString").append("numField",100));
+        collection.insertOne(new Document("stringField","testString").append("numField",20));
+        collection.insertOne(new Document("stringField","testString3").append("numField",0));
 
-        assertCriteriaResult("x.y='z' NOR x.z='z'", new Criteria().norOperator(Criteria.where("x.y").is("z"),(Criteria.where("x.z").is("z"))));
-        assertCriteriaResult("x.y='z' NOR x.z=99", new Criteria().norOperator(Criteria.where("x.y").is("z"),(Criteria.where("x.z").is(99))));
+        TestBuilder.build("stringField='testString' nor numField=0")
+                .assertBsonResult(Filters.nor(Filters.eq("stringField","testString"),Filters.eq("numField",0)))
+                .assertBsonDbResult(0)
+                .assertCriteriaResult(new Criteria().norOperator(Criteria.where("stringField").is("testString"),(Criteria.where("numField").is(0))));
+
+        TestBuilder.build("stringField='testString' nor numField=99")
+                .assertBsonResult(Filters.nor(Filters.eq("stringField","testString"),Filters.eq("numField",99)))
+                .assertBsonDbResult(1)
+                .assertCriteriaResult(new Criteria().norOperator(Criteria.where("stringField").is("testString"),(Criteria.where("numField").is(99))));
     }
     @Test
     void shouldEvaluateNotStatement(){
-        assertBsonResult("not(exists(x.z) = true)", Filters.not(Filters.exists("x.z")));
-        assertBsonResult("!(type(x.z) = 'string')", Filters.not(Filters.type("x.z","string")));
+        collection.insertOne(new Document("stringField","testString").append("numField",100));
+        collection.insertOne(new Document("stringField","testString").append("numField",20));
+        collection.insertOne(new Document("stringField","testString3").append("numField",0));
 
-        assertCriteriaResult("not(exists(x.z) = true)", Criteria.where("x.z").not().exists(true));
-        assertCriteriaResult("!(type(x.z) = 'string')", Criteria.where("x.z").not().type(JsonSchemaObject.Type.of("string")));
+        TestBuilder.build("not(exists(stringField1) = true)")
+                .assertBsonResult(Filters.not(Filters.exists("stringField1")))
+                .assertBsonDbResult(3)
+                .assertCriteriaResult(Criteria.where("stringField1").not().exists(true));
+
+        TestBuilder.build("!(type(stringField) = 'string')")
+                .assertBsonResult(Filters.not(Filters.type("stringField","string")))
+                .assertBsonDbResult(0)
+                .assertCriteriaResult(Criteria.where("stringField").not().type(JsonSchemaObject.Type.of("string")));
     }
     @Test
     void shouldEvaluateInOperator() {
-        assertBsonResult("x.y in ('a' 'b' 'c')", Filters.in("x.y",new String[] {"a","b","c"}));
-        assertBsonResult("x.y in (1 2 3)", Filters.in("x.y",new Integer[] {1,2,3}));
+        collection.insertOne(new Document("stringField","testString").append("numField",100));
+        collection.insertOne(new Document("stringField","testString").append("numField",20));
+        collection.insertOne(new Document("stringField","testString3").append("numField",0));
 
-        assertCriteriaResult("x.y in ('a' 'b' 'c')", Criteria.where("x.y").in(new String[] {"a","b","c"}));
-        assertCriteriaResult("x.y in (1 2 3)", Criteria.where("x.y").in(new Integer[] {1,2,3}));
+        TestBuilder.build("stringField in ('testString' 'testString3' 'testString2')")
+                .assertBsonResult(Filters.in("stringField",new String[] {"testString","testString3","testString2"}))
+                .assertBsonDbResult(3)
+                .assertCriteriaResult(Criteria.where("stringField").in(new String[] {"testString","testString3","testString2"}));
     }
 
     @Test
     void shouldEvaluateNinOperator() {
-        assertBsonResult("x.y nin ('a' 'b' 'c')", Filters.nin("x.y",new String[] {"a","b","c"}));
-        assertBsonResult("x.y nin (1 2 3)", Filters.nin("x.y",new Integer[] {1,2,3}));
+        collection.insertOne(new Document("stringField","testString").append("numField",100));
+        collection.insertOne(new Document("stringField","testString").append("numField",20));
+        collection.insertOne(new Document("stringField","testString3").append("numField",0));
 
-        assertCriteriaResult("x.y nin ('a' 'b' 'c')", Criteria.where("x.y").nin(new String[] {"a","b","c"}));
-        assertCriteriaResult("x.y nin (1 2 3)", Criteria.where("x.y").nin(new Integer[] {1,2,3}));
+        TestBuilder.build("stringField nin ('testString' 'testString3' 'testString2')")
+                .assertBsonResult(Filters.nin("stringField",new String[] {"testString","testString3","testString2"}))
+                .assertBsonDbResult(0)
+                .assertCriteriaResult(Criteria.where("stringField").nin(new String[] {"testString","testString3","testString2"}));
     }
 
     @Test
     void shouldEvaluateAllOperator() {
-        assertBsonResult("x.y all ('a' 'b' 'c')", Filters.all("x.y",new String[] {"a","b","c"}));
-        assertBsonResult("x.y all (1 2 3)", Filters.all("x.y",new Integer[] {1,2,3}));
+        collection.insertOne(new Document("title","array1").append("arrayField",Arrays.stream(new Integer[]{1,2,3}).collect(Collectors.toList())));
+        collection.insertOne(new Document("title","array2").append("arrayField",Arrays.stream(new String[]{"a","b","c"}).collect(Collectors.toList())));
 
-        assertCriteriaResult("x.y all ('a' 'b' 'c')", Criteria.where("x.y").all(new String[] {"a","b","c"}));
-        assertCriteriaResult("x.y all (1 2 3)", Criteria.where("x.y").all(new Integer[] {1,2,3}));
+        TestBuilder.build("arrayField all ('a' 'b' 'c')")
+                .assertBsonResult(Filters.all("arrayField",new String[] {"a","b","c"}))
+                .assertBsonDbResult(1)
+                .assertCriteriaResult(Criteria.where("arrayField").all(new String[] {"a","b","c"}));
+
+        TestBuilder.build("arrayField all (1 2 3)")
+                .assertBsonResult(Filters.all("arrayField",new Integer[] {1,2,3}))
+                .assertBsonDbResult(1)
+                .assertCriteriaResult(Criteria.where("arrayField").all(new Integer[] {1,2,3}));
     }
 
     @Test
     void shouldEvaluateElemMatchOperator(){
-        assertBsonResult("x.y matches (c='b')", Filters.elemMatch("x.y",Filters.eq("c","b")));
-        assertBsonResult("x.y matches (c='b' and d=1)", Filters.elemMatch("x.y",
-                Filters.and(
-                        Filters.eq("c","b"),
-                        Filters.eq("d",1))
-                ));
+        TestBuilder.build("x.y matches (c='b')")
+                .assertBsonResult(Filters.elemMatch("x.y",Filters.eq("c","b")))
+                .assertCriteriaResult(Criteria.where("x.y").elemMatch(Criteria.where("c").is("b")));
 
-        assertCriteriaResult("x.y matches (c='b')", Criteria.where("x.y").elemMatch(Criteria.where("c").is("b")));
-        assertCriteriaResult("x.y matches (c='b' and d=1)", Criteria.where("x.y").elemMatch(
-                new Criteria().andOperator(
-                        Criteria.where("c").is("b"),
-                        Criteria.where("d").is(1))
-                ));
+        TestBuilder.build("x.y matches (c='b' and d=1)")
+                .assertBsonResult(Filters.elemMatch("x.y",
+                        Filters.and(
+                                Filters.eq("c","b"),
+                                Filters.eq("d",1))
+                        )
+                )
+                .assertCriteriaResult(Criteria.where("x.y").elemMatch(
+                        new Criteria().andOperator(
+                                Criteria.where("c").is("b"),
+                                Criteria.where("d").is(1))
+                        )
+                );
     }
     @Test
     void shouldKeepLogicalPrecedence(){
-        assertBsonResult("x.y='z' or x.y='y' and x.z=99 or x.z=1200",
+        TestBuilder.build("x.y='z' or x.y='y' and x.z=99 or x.z=1200").assertBsonResult(
                 Filters.or(
                         Filters.or(
-                            Filters.eq("x.y","z"),
-                            Filters.and(
-                                Filters.eq("x.y","y"),
-                                Filters.eq("x.z",99)
-                            )
+                                Filters.eq("x.y","z"),
+                                Filters.and(
+                                        Filters.eq("x.y","y"),
+                                        Filters.eq("x.z",99)
+                                )
                         ),
                         Filters.eq("x.z",1200))
-                );
-        assertBsonResult("(x.y='z' or x.y='y') and (x.z=99 or x.z=1200)",
+        ).assertCriteriaResult(
+                new Criteria().orOperator(
+                        new Criteria().orOperator(
+                                Criteria.where("x.y").is("z"),
+                                new Criteria().andOperator(
+                                        Criteria.where("x.y").is("y"),
+                                        Criteria.where("x.z").is(99)
+                                )
+                        ),
+                        Criteria.where("x.z").is(1200)
+                )
+        );
+
+        TestBuilder.build("(x.y='z' or x.y='y') and (x.z=99 or x.z=1200)").assertBsonResult(
                 Filters.and(
                         Filters.or(
                                 Filters.eq("x.y","z"),
@@ -171,22 +329,8 @@ class MongoSearchEngineParserTest {
                                 Filters.eq("x.z",99),
                                 Filters.eq("x.z",1200)
                         )
-                ));
-
-        assertCriteriaResult("x.y='z' or x.y='y' and x.z=99 or x.z=1200",
-                new Criteria().orOperator(
-                            new Criteria().orOperator(
-                                    Criteria.where("x.y").is("z"),
-                                    new Criteria().andOperator(
-                                            Criteria.where("x.y").is("y"),
-                                            Criteria.where("x.z").is(99)
-                                    )
-                            ),
-                            Criteria.where("x.z").is(1200)
                 )
-        );
-
-        assertCriteriaResult("(x.y='z' or x.y='y') and (x.z=99 or x.z=1200)",
+        ).assertCriteriaResult(
                 new Criteria().andOperator(
                         new Criteria().orOperator(
                                 Criteria.where("x.y").is("z"),
@@ -198,27 +342,6 @@ class MongoSearchEngineParserTest {
                         )
                 )
         );
-
     }
 
-    private void assertBsonResult(String s, Bson expected){
-        parser = new MongoSearchEngineParser(new StringReader(s));
-        try {
-            Bson result = (Bson) parser.parse();
-            Assertions.assertEquals(expected.toBsonDocument().toJson(),result.toBsonDocument().toJson());
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private void assertCriteriaResult(String s, Criteria expected){
-        parser = new MongoSearchEngineParser(new StringReader(s));
-        parser.setCriteraMode();
-        try {
-            Criteria c = (Criteria)parser.parse();
-            Assertions.assertEquals(expected.getCriteriaObject().toBsonDocument().toJson(),c.getCriteriaObject().toBsonDocument().toJson());
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
-    }
 }
