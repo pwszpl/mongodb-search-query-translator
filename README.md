@@ -59,49 +59,49 @@ To pass resulting object to DB with mongo driver for Java, you can use Collectio
 Table below shows support for [Filters](https://www.mongodb.com/docs/drivers/java/sync/v4.6/fundamentals/builders/filters/) in MongoDB driver:
 
 #### Comparision filters
-| Filter                | Supported | Syntax                                          | Example                  |
-|-----------------------|-----------|-------------------------------------------------|--------------------------|
-| **Comparision**       |           |                                                 |                          |
-| eq                    | yes       | `=`                                             | x.y = 1                  |
-| gt                    | yes       | `>`                                             | x.y > 1                  |
-| gte                   | yes       | `>=`                                            | x.y >= 1                 |
-| lt                    | yes       | `<`                                             | x.y < 1                  |
-| lt                    | yes       | `<=`                                            | x.y <= 1                 |
-| ne                    | yes       | `<>`, `!=`, `^=`                                | x.y <> 1                 |
-| in                    | yes       | `<FIELD_NAME> IN ( <LITERAL> )`                 | x.y in ('x' 'y')         |
-| nin                   | yes       | `<FIELD_NAME> NIN ( <LITERAL> )`                | x.y nin ('x' 'y')        |
-| empty                 | no        |                                                 |                          |
-| **Logical**           |           |                                                 |                          |
-| and                   | yes       | `and`, `&&`                                     | x.y = 1 and x.z = 'abc'  |
-| or                    | yes       | `or`, `\                                        | \                        |`                                    | x.y = 1 or x.z = 'abc'   |
-| not                   | yes       | `not(<FIELD_OPERATOR>)`                         | not(exists(x.y) = false) |
-| nor                   | yes       | `nor`                                           | x.y = 1 nor x.z = 'abc'  |
-| **Arrays**            |           |                                                 |                          |
-| all                   | no        | `<FIELD_NAME> ALL ( <LITERAL> )`                 | x.y all (1 2 3)          |
-| elemMatch             | no        |                                                 |                          |
-| size                  | yes       | `size(<FIELD_NAME>) = <INT_NUMBER>`             | size(x.y) =6             |
-| **Elements**          |           |                                                 |                          |
-| exists                | yes       | `exists(<FIELD_NAME>) = <BOOLEAN>`              | exists(x.y) = false      |
-| type                  | yes       | `type(<FIELD_NAME>) = <STRING_LITERAL>`         | type(x.y) = 'string'     |
-| **Evaluation**        |           |                                                 |                          |
-| mod                   | yes       | `mod(<FIELD_NAME>,<INT_NUMBER>) = <INT_NUMBER>` | mod(x.y,2) = 1           |
-| regex                 | yes       | `<FIELD_NAME> like <STRING_LITERAL>`            | x.y like '.*abc'         |
-| text                  | no        |                                                 |                          |
-| where                 | no        |                                                 |                          |
-| **Bitwise**           |           |                                                 |                          |
-| bitsAllSet            | no        |                                                 |                          |
-| bitsAllClear          | no        |                                                 |                          |
-| bitsAnySet            | no        |                                                 |                          |
-| bitsAnyClear          | no        |                                                 |                          |
-| **Geospatial**        |           |                                                 |                          |
-| geoWithin             | no        |                                                 |                          |
-| geoWithinBox          | no        |                                                 |                          |
-| geoWithinPolygon      | no        |                                                 |                          |
-| geoWithinCenter       | no        |                                                 |                          |
-| geoWithinCenterSphere | no        |                                                 |                          |
-| geoIntersects         | no        |                                                 |                          |
-| near                  | no        |                                                 |                          |
-| nearSphere            | no        |                                                 |                          |
+| Filter                | Supported | Syntax                                          | Example                   |
+|-----------------------|-----------|-------------------------------------------------|---------------------------|
+| **Comparision**       |           |                                                 |                           |
+| eq                    | yes       | `=`                                             | x.y = 1                   |
+| gt                    | yes       | `>`                                             | x.y > 1                   |
+| gte                   | yes       | `>=`                                            | x.y >= 1                  |
+| lt                    | yes       | `<`                                             | x.y < 1                   |
+| lt                    | yes       | `<=`                                            | x.y <= 1                  |
+| ne                    | yes       | `<>`, `!=`, `^=`                                | x.y <> 1                  |
+| in                    | yes       | `<FIELD_NAME> IN ( <LITERAL> )`                 | x.y in ('x' 'y')          |
+| nin                   | yes       | `<FIELD_NAME> NIN ( <LITERAL> )`                | x.y nin ('x' 'y')         |
+| empty                 | no        |                                                 |                           |
+| **Logical**           |           |                                                 |                           |
+| and                   | yes       | `and`, `&&`                                     | x.y = 1 and x.z = 'abc'   |
+| or                    | yes       | `or`, `\|\|`                                    | x.y = 1 or x.z = 'abc'    |
+| not                   | yes       | `not(<FIELD_OPERATOR>)`                         | not(exists(x.y) = false)  |
+| nor                   | yes       | `nor`                                           | x.y = 1 nor x.z = 'abc'   |
+| **Arrays**            |           |                                                 |                           |
+| all                   | no        | `<FIELD_NAME> ALL ( <LITERAL> )`                | x.y all (1 2 3)           |
+| elemMatch             | no        | `<FIELD_NAME> MATCHES ( <COMPARISION> )`        | x.y matches (a=1 and b=2) |
+| size                  | yes       | `size(<FIELD_NAME>) = <INT_NUMBER>`             | size(x.y) =6              |
+| **Elements**          |           |                                                 |                           |
+| exists                | yes       | `exists(<FIELD_NAME>) = <BOOLEAN>`              | exists(x.y) = false       |
+| type                  | yes       | `type(<FIELD_NAME>) = <STRING_LITERAL>`         | type(x.y) = 'string'      |
+| **Evaluation**        |           |                                                 |                           |
+| mod                   | yes       | `mod(<FIELD_NAME>,<INT_NUMBER>) = <INT_NUMBER>` | mod(x.y,2) = 1            |
+| regex                 | yes       | `<FIELD_NAME> like <STRING_LITERAL>`            | x.y like '.*abc'          |
+| text                  | no        |                                                 |                           |
+| where                 | no        |                                                 |                           |
+| **Bitwise**           |           |                                                 |                           |
+| bitsAllSet            | no        |                                                 |                           |
+| bitsAllClear          | no        |                                                 |                           |
+| bitsAnySet            | no        |                                                 |                           |
+| bitsAnyClear          | no        |                                                 |                           |
+| **Geospatial**        |           |                                                 |                           |
+| geoWithin             | no        |                                                 |                           |
+| geoWithinBox          | no        |                                                 |                           |
+| geoWithinPolygon      | no        |                                                 |                           |
+| geoWithinCenter       | no        |                                                 |                           |
+| geoWithinCenterSphere | no        |                                                 |                           |
+| geoIntersects         | no        |                                                 |                           |
+| near                  | no        |                                                 |                           |
+| nearSphere            | no        |                                                 |                           |
 
 ### Important notes
 1. As of now only comparision between field and value are supported (any field - field, or value-value comparision will result in parsing error)

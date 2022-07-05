@@ -36,6 +36,7 @@ TOKEN : { < IN : "IN" >}
 TOKEN : { < NIN : "NIN" >}
 TOKEN : { < ALL : "ALL" >}
 TOKEN : { < LIKE : "LIKE" >}
+TOKEN : { < MATCHES: "MATCHES" >}
 TOKEN : { < EXISTS_FUNCTION: "EXISTS" >}
 TOKEN : { < TYPE_FUNCTION: "TYPE" >}
 TOKEN : { < SIZE_FUNCTION: "SIZE" >}
@@ -208,6 +209,8 @@ Object evaluatFieldOperator(Token field):
 {
     Token operator;
     Token value = null;
+    Token subField;
+    Token subOperator;
     List<Object> inList = new ArrayList();
 }
 {
@@ -234,6 +237,22 @@ Object evaluatFieldOperator(Token field):
     operator=<LIKE> value=<STRING_LITERAL>
         {
             return applyTransfromFunction(operator,field,value);
+        }
+    |
+    operator=<MATCHES> <L_PAR>
+            subField=<OBJ_FIELD> subOperator=<EQ>(value=<INT_NUMBER> | value=<R_NUMBER> | value= <STRING_LITERAL> )
+            {
+                inList.add(applyTransfromFunction(subOperator,subField,value));
+            }
+        (
+            <AND> subField=<OBJ_FIELD> subOperator=<EQ>(value=<INT_NUMBER> | value=<R_NUMBER> | value= <STRING_LITERAL> )
+            {
+                inList.add(applyTransfromFunction(subOperator,subField,value));
+            }
+        )*
+        <R_PAR>
+        {
+            return applyTransfromFunction(operator,field,inList);
         }
 }
 

@@ -133,6 +133,22 @@ class MongoSearchEngineParserTest {
     }
 
     @Test
+    void shouldEvaluateElemMatchOperator(){
+        assertBsonResult("x.y matches (c='b')", Filters.elemMatch("x.y",Filters.eq("c","b")));
+        assertBsonResult("x.y matches (c='b' and d=1)", Filters.elemMatch("x.y",
+                Filters.and(
+                        Filters.eq("c","b"),
+                        Filters.eq("d",1))
+                ));
+
+        assertCriteriaResult("x.y matches (c='b')", Criteria.where("x.y").elemMatch(Criteria.where("c").is("b")));
+        assertCriteriaResult("x.y matches (c='b' and d=1)", Criteria.where("x.y").elemMatch(
+                new Criteria().andOperator(
+                        Criteria.where("c").is("b"),
+                        Criteria.where("d").is(1))
+                ));
+    }
+    @Test
     void shouldKeepLogicalPrecedence(){
         assertBsonResult("x.y='z' or x.y='y' and x.z=99 or x.z=1200",
                 Filters.or(
@@ -189,7 +205,7 @@ class MongoSearchEngineParserTest {
         parser = new MongoSearchEngineParser(new StringReader(s));
         try {
             Bson result = (Bson) parser.parse();
-            Assertions.assertEquals(expected,result);
+            Assertions.assertEquals(expected.toBsonDocument().toJson(),result.toBsonDocument().toJson());
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }

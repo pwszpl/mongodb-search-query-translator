@@ -28,6 +28,7 @@ public class TokenFactory  {
             case LIKE: return getCustomToken(kind,image,FunctionsMapping.LIKE);
             case MOD_FUNCTION: return getCustomToken(kind,image,FunctionsMapping.MOD);
             case ALL: return getCustomToken(kind,image,FunctionsMapping.ALL);
+            case MATCHES: return getCustomToken(kind,image,FunctionsMapping.MATCHES);
             default: return new Token(kind,image);
         }
     }

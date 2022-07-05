@@ -13,6 +13,7 @@ public enum FunctionsMapping {
     IN("in"),
     NIN("nin"),
     ALL("all"),
+    MATCHES("elemMatch"),
     EXISTS("exists"),
     TYPE("type"),
     SIZE("size"),

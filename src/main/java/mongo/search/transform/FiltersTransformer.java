@@ -1,12 +1,10 @@
 package mongo.search.transform;
 
 import com.mongodb.client.model.Filters;
-import mongo.parser.Token;
 import mongo.search.util.ReflectionUtil;
 import mongo.search.util.StringUtil;
 import org.bson.conversions.Bson;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,8 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
-import static mongo.parser.MongoSearchEngineParserConstants.NOT;
 
 public class FiltersTransformer implements Function {
     public static Class filtersClass;
@@ -43,7 +39,18 @@ public class FiltersTransformer implements Function {
                 operatorArgument.add(transform.getParams().get(i));
             }
             functionParam.add(operatorArgument);
-        } else if(ReflectionUtil.isNotOperator(transform.getParams().get(0))){
+        }
+        else if(StringUtil.isStringInList(function,"elemMatch")){
+            List elemList = (List)transform.getParams().get(1);
+            Bson filter;
+            if(elemList.size() > 1) filter = Filters.and((List)transform.getParams().get(1));
+            else filter = (Bson) elemList.get(0);
+
+            functionParam.add(transform.getParams().get(0));
+            functionParam.add(filter);
+
+        }
+        else if(ReflectionUtil.isNotOperator(transform.getParams().get(0))){
             // if second argument is not operator we create new Transform object (without not operator) pass it through apply function to get result
             // and finally apply not globally
             TransformObject transformObject = new TransformObject(transform.getFunctionalToken(),transform.getParams().subList(1,transform.getParams().size()));
