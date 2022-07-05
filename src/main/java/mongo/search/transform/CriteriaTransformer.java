@@ -1,14 +1,11 @@
 package mongo.search.transform;
 
-import mongo.parser.Token;
 import mongo.search.util.ReflectionUtil;
 import mongo.search.util.StringUtil;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.schema.JsonSchemaObject;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

@@ -2,10 +2,6 @@ package mongo.search.transform;
 
 import mongo.parser.Token;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-
 import static mongo.parser.MongoSearchEngineParserConstants.*;
 
 public class TokenFactory  {
