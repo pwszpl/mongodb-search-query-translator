@@ -16,16 +16,21 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+/**
+ * Implements function interface to create Criteria objects from MongoSearchEngine tokens.
+ */
 public class CriteriaTransformer implements Function {
     public static Class filtersClass;
     public static Map<String, List<Method>> filtersMethods;
 
-    static {
-        try {
-            filtersClass = Class.forName("org.springframework.data.mongodb.core.query.Criteria");
+    public CriteriaTransformer(){
+        if(filtersMethods == null){
+            try {
+                filtersClass = Class.forName("org.springframework.data.mongodb.core.query.Criteria");
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
             filtersMethods = Arrays.stream(filtersClass.getDeclaredMethods()).collect(Collectors.groupingBy(Method::getName));
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
         }
     }
 

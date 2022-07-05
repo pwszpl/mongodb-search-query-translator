@@ -18,7 +18,7 @@ PARSER_BEGIN(MongoSearchEngineParser)
     import mongo.search.transform.FiltersTransformer;
 
     public class MongoSearchEngineParser {
-        private Function transformer = new FiltersTransformer();
+        private Function transformer;
 
         public void setCriteraMode(){
             this.transformer = new CriteriaTransformer();
@@ -68,6 +68,9 @@ Object parse():
     Object result;
 }
 {
+    //set BSON as default mode
+    {if(transformer == null) setBSONMode(); }
+
     result = NorExpression()
     <EOF>
     {return result;}

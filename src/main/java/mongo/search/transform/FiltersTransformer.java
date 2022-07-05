@@ -13,16 +13,21 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+/**
+ * Implements function interface to create Filters objects from MongoSearchEngine tokens.
+ */
 public class FiltersTransformer implements Function {
     public static Class filtersClass;
     public static Map<String, List<Method>> filtersMethods;
 
-    static {
-        try {
-            filtersClass = Class.forName("com.mongodb.client.model.Filters");
+    public FiltersTransformer(){
+        if(filtersMethods == null){
+            try {
+                filtersClass = Class.forName("com.mongodb.client.model.Filters");
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
             filtersMethods = Arrays.stream(filtersClass.getDeclaredMethods()).collect(Collectors.groupingBy(Method::getName));
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
         }
     }
 
