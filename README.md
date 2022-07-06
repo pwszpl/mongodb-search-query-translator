@@ -44,8 +44,8 @@ For more examples see [MongoSearchEngineParserTest.class](https://github.com/pws
 ### Integrating with SpringBoot
 To pass resulting object to DB you can use MongoTemplate interface:
 
-    Criteria criteria = (Criteria) parser.parse();
     parser.setCriteraMode();
+    Criteria criteria = (Criteria) parser.parse();
     Query query = new Query(criteria);
     return mongoTemplate.find(query,Collection.class);
 
