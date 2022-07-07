@@ -3,8 +3,12 @@ package io.github.pwszpl.mongo.search.transform;
 import io.github.pwszpl.mongo.parser.MongoSearchEngineParserConstants;
 import io.github.pwszpl.mongo.parser.Token;
 import io.github.pwszpl.mongo.search.util.StringUtil;
+import org.springframework.data.mongodb.core.aggregation.DateOperators;
 
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -47,6 +51,12 @@ public class TransformObject {
                 case MongoSearchEngineParserConstants.BOOLEAN:
                     boolean val = Boolean.valueOf(token.image).booleanValue();
                     return val;
+                case MongoSearchEngineParserConstants.DATE:
+                    // filling to match ISO format
+                    return Date.from(Instant.parse(token.image+"T00:00:00.00Z"));
+                case MongoSearchEngineParserConstants.TIMESTAMP:
+                    // filling to match ISO format
+                    return Date.from(Instant.parse(token.image+".00Z"));
                 case MongoSearchEngineParserConstants.OBJ_FIELD:
                     return token.image;
             }

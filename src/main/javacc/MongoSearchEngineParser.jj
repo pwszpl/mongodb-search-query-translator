@@ -56,6 +56,8 @@ TOKEN : { < LE : "<=" >}
 TOKEN : { < GE : ">=" >}
 TOKEN : { < BOOLEAN: "TRUE" | "FALSE" >}
 TOKEN : { < COMMA: "," >}
+TOKEN : { < TIMESTAMP : <DATE> "T" (<DIGITS>){2} ":" (<DIGITS>){2} ":" (<DIGITS>){2} >}
+TOKEN : { < DATE: (<DIGITS>){4} "-" (<DIGITS>){2} "-" (<DIGITS>){2} >}
 TOKEN : { < INT_NUMBER : <DIGITS> >}
 TOKEN : { < R_NUMBER : ("-")?<NUMBER> >}
 TOKEN : { < #NUMBER : <DIGITS> | <DIGITS> "." <DIGITS> | "." <DIGITS> >}
@@ -233,7 +235,8 @@ Object evaluatFieldOperator(Token field):
         return applyTransfromFunction(operator,field,inList);
     }
     |
-    (operator=<GE> | operator=<LE> | operator=<EQ> | operator=<NE> | operator=<GT> | operator=<LT>) (value=<INT_NUMBER> | value=<R_NUMBER> | value= <STRING_LITERAL> )
+    // value token order is important here because of a way statements are generated (especially for date types)
+    (operator=<GE> | operator=<LE> | operator=<EQ> | operator=<NE> | operator=<GT> | operator=<LT>) (value=<INT_NUMBER> | value=<R_NUMBER> | value= <STRING_LITERAL> | value=<TIMESTAMP> | value=<DATE>  )
         {
             return applyTransfromFunction(operator,field,value);
         }

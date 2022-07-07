@@ -18,7 +18,10 @@ import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.utility.DockerImageName;
 
+import java.time.Instant;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.stream.Collectors;
 
 class MongoSearchEngineParserTest {
@@ -94,6 +97,28 @@ class MongoSearchEngineParserTest {
                 .assertBsonResult(Filters.gte("numField",20.0))
                 .assertBsonDbResult(2)
                 .assertCriteriaResult(Criteria.where("numField").gte(20.0));
+    }
+
+    @Test
+    void shouldEvaluateDates(){
+        collection.insertOne(new Document("dateField", Date.from(Instant.parse("2022-01-01T00:00:00.00Z"))));
+        collection.insertOne(new Document("dateField",  Date.from(Instant.parse("2021-01-01T00:00:00.00Z"))));
+
+        TestBuilder.build("dateField>=2022-01-01")
+                .assertBsonResult(Filters.gte("dateField",Date.from(Instant.parse("2022-01-01T00:00:00.00Z"))))
+                .assertBsonDbResult(1)
+                .assertCriteriaResult(Criteria.where("dateField").gte(Date.from(Instant.parse("2022-01-01T00:00:00.00Z"))));
+    }
+
+    @Test
+    void shouldEvaluateTimestamps(){
+        collection.insertOne(new Document("dateField", Date.from(Instant.parse("2022-01-01T23:00:00.00Z"))));
+        collection.insertOne(new Document("dateField",  Date.from(Instant.parse("2022-01-01T21:00:00.00Z"))));
+
+        TestBuilder.build("dateField>=2022-01-01T22:00:00")
+                .assertBsonResult(Filters.gte("dateField",Date.from(Instant.parse("2022-01-01T22:00:00.00Z"))))
+                .assertBsonDbResult(1)
+                .assertCriteriaResult(Criteria.where("dateField").gte(Date.from(Instant.parse("2022-01-01T22:00:00.00Z"))));
     }
 
     @Test
