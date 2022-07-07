@@ -1,11 +1,12 @@
-package mongo.parser;
+package io.github.pwszpl.mongo.parser;
 
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
-import mongo.util.TestBuilder;
+import io.github.pwszpl.mongo.util.TestBuilder;
+import io.github.pwszpl.mongo.parser.MongoSearchEngineParser;
 import org.bson.Document;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;

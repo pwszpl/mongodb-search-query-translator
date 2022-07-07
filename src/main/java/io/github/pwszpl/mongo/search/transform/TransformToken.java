@@ -1,6 +1,6 @@
-package mongo.search.transform;
+package io.github.pwszpl.mongo.search.transform;
 
-import mongo.parser.Token;
+import io.github.pwszpl.mongo.parser.Token;
 
 public class TransformToken extends Token {
     private String functionBSON;

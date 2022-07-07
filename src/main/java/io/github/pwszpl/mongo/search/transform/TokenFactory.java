@@ -1,8 +1,8 @@
-package mongo.search.transform;
+package io.github.pwszpl.mongo.search.transform;
 
-import mongo.parser.Token;
+import io.github.pwszpl.mongo.parser.Token;
 
-import static mongo.parser.MongoSearchEngineParserConstants.*;
+import static io.github.pwszpl.mongo.parser.MongoSearchEngineParserConstants.*;
 
 public class TokenFactory  {
     public static Token newToken(int kind, String image) {

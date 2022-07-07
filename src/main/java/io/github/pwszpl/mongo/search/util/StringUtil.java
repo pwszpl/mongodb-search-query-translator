@@ -1,6 +1,6 @@
-package mongo.search.util;
+package io.github.pwszpl.mongo.search.util;
 
-import mongo.parser.Token;
+import io.github.pwszpl.mongo.parser.Token;
 
 import java.util.Arrays;
 

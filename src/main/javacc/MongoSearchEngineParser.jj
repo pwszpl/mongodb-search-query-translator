@@ -1,21 +1,21 @@
 options {
     STATIC = false ;
     JDK_VERSION = "1.8";
-    TOKEN_FACTORY = "mongo.search.transform.TokenFactory";
+    TOKEN_FACTORY = "io.github.pwszpl.mongo.search.transform.TokenFactory";
     IGNORE_CASE = true;
 }
 
 PARSER_BEGIN(MongoSearchEngineParser)
-    package mongo.parser;
+    package io.github.pwszpl.mongo.parser;
 
     import java.util.ArrayList;
-    import mongo.search.transform.CriteriaTransformer;
-    import mongo.search.util.StringUtil;
-    import mongo.search.transform.TransformObject;
+    import io.github.pwszpl.mongo.search.transform.CriteriaTransformer;
+    import io.github.pwszpl.mongo.search.util.StringUtil;
+    import io.github.pwszpl.mongo.search.transform.TransformObject;
     import java.util.List;
     import java.util.function.Function;
-    import mongo.search.transform.CriteriaTransformer;
-    import mongo.search.transform.FiltersTransformer;
+    import io.github.pwszpl.mongo.search.transform.CriteriaTransformer;
+    import io.github.pwszpl.mongo.search.transform.FiltersTransformer;
 
     public class MongoSearchEngineParser {
         private Function transformer;
@@ -28,6 +28,7 @@ PARSER_BEGIN(MongoSearchEngineParser)
             this.transformer = new FiltersTransformer();
         }
     }
+
 PARSER_END(MongoSearchEngineParser)
 
 SKIP : {" " | "\n" | "\r" | "\r\n" }

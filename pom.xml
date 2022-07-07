@@ -44,7 +44,7 @@
                             <goal>javacc</goal>
                         </goals>
                         <configuration>
-                            <packageName>mongo.parser</packageName>
+                            <packageName>io.github.pwszpl.mongo.parser</packageName>
                             <outputDirectory>target/generated-sources</outputDirectory>
                         </configuration>
                     </execution>

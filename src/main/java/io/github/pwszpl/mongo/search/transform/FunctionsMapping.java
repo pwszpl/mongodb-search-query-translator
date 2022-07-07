@@ -1,4 +1,4 @@
-package mongo.search.transform;
+package io.github.pwszpl.mongo.search.transform;
 
 public enum FunctionsMapping {
     EQ("eq","is"),

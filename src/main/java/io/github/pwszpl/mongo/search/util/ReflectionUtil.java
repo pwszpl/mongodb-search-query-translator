@@ -1,6 +1,6 @@
-package mongo.search.util;
+package io.github.pwszpl.mongo.search.util;
 
-import mongo.parser.Token;
+import io.github.pwszpl.mongo.parser.Token;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-import static mongo.parser.MongoSearchEngineParserConstants.NOT;
+import static io.github.pwszpl.mongo.parser.MongoSearchEngineParserConstants.NOT;
 
 public class ReflectionUtil {
     private static final Map<Class<?>, Class<?>> primitiveMap = new HashMap<>();

@@ -1,8 +1,8 @@
-package mongo.search.transform;
+package io.github.pwszpl.mongo.search.transform;
 
 import com.mongodb.client.model.Filters;
-import mongo.search.util.ReflectionUtil;
-import mongo.search.util.StringUtil;
+import io.github.pwszpl.mongo.search.util.ReflectionUtil;
+import io.github.pwszpl.mongo.search.util.StringUtil;
 import org.bson.conversions.Bson;
 
 import java.lang.reflect.Method;

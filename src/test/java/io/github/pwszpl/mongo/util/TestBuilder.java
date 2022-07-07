@@ -1,8 +1,8 @@
-package mongo.util;
+package io.github.pwszpl.mongo.util;
 
 import com.mongodb.client.MongoCollection;
-import mongo.parser.MongoSearchEngineParser;
-import mongo.parser.ParseException;
+import io.github.pwszpl.mongo.parser.MongoSearchEngineParser;
+import io.github.pwszpl.mongo.parser.ParseException;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.junit.jupiter.api.Assertions;

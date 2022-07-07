@@ -1,7 +1,7 @@
-package mongo.search.transform;
+package io.github.pwszpl.mongo.search.transform;
 
-import mongo.search.util.ReflectionUtil;
-import mongo.search.util.StringUtil;
+import io.github.pwszpl.mongo.search.util.ReflectionUtil;
+import io.github.pwszpl.mongo.search.util.StringUtil;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.schema.JsonSchemaObject;
 

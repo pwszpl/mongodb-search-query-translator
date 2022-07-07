@@ -1,8 +1,8 @@
-package mongo.search.transform;
+package io.github.pwszpl.mongo.search.transform;
 
-import mongo.parser.MongoSearchEngineParserConstants;
-import mongo.parser.Token;
-import mongo.search.util.StringUtil;
+import io.github.pwszpl.mongo.parser.MongoSearchEngineParserConstants;
+import io.github.pwszpl.mongo.parser.Token;
+import io.github.pwszpl.mongo.search.util.StringUtil;
 
 import java.util.Arrays;
 import java.util.List;
