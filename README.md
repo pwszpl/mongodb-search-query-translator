@@ -103,10 +103,26 @@ Table below shows support for [Filters](https://www.mongodb.com/docs/drivers/jav
 | near                  | no        |                                                 |                           |
 | nearSphere            | no        |                                                 |                           |
 
+#### Field type
+You can traverse through document nested fields using standard MongoDB dot notation. 
+Any character chain not enclosed in '' is considered field declaration (apart from types mentioned below).
+
+For example: `field1.subField2` means to compare field called subField2 in object field1.
+
+#### Comparision Types
+Following types are supported for comparision:
+* **Strings** - any character chain enclosed in `''` (e.g.: `field = 'this is string'`)
+* **Decimal numbers** - any digits chain separated by `.` (e.g.: `field = 9.123`)
+* **Integers**  - any digits chain without decimal separator (e.g.: `field = 9`)
+* **Dates** - `YYYY-MM-DD` notation
+* **Dates with time** - `YYYY-MM-DDTHH:MI:SS` notation
+
+
 ### Important notes
-1. As of now only comparision between field and value are supported (any field - field, or value-value comparision will result in parsing error)
-2. As of now, there is no support for escaping `'` character in string literals. May be added in future releases.
-3. **<ins>Engine does not do any optimisations of query written by user.</ins>** In case of simple queries it might not have any difference, but for very large and complex queries (many nestings of and/or operators) there might be a difference in response times. 
+1. As of now, there is no support for escaping `'` character in string literals. May be added in future releases.
+1. All integers with negative sign are by default transformed to double type.
+1. All dates are by default transformed to timestamp e.g. 2020-01-01 is transformed to 2020-01-01T00:00:00.   
+1. **<ins>Engine does not do any optimisations of query written by user.</ins>** In case of simple queries it might not have any difference, but for very large and complex queries (many nestings of and/or operators) there might be a difference in response times. 
 Please check impact on your querry resolution time, before applying to production environment.
 
 # Bug tracker

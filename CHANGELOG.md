@@ -1,3 +1,7 @@
+# 0.5.0
+* added support for DATE and DATETIME types comparision
+* moved all classes to io.github.pwszpl namespace 
+
 # 0.4.0
 * added support for following functions:
   * all
