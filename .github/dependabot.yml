@@ -1,0 +1,9 @@
+version: 2
+updates:
+  - package-ecosystem: "maven" # See documentation for possible values
+    directory: "/" # Location of package manifests
+    schedule:
+      interval: "daily"
+    only:
+      - dependency-name: org.springframework.boot:spring-boot-starter-data-mongodb
+      - dependency-name: org.mongodb:mongodb-driver-sync
