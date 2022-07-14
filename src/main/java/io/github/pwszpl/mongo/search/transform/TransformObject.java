@@ -3,6 +3,7 @@ package io.github.pwszpl.mongo.search.transform;
 import io.github.pwszpl.mongo.parser.MongoSearchEngineParserConstants;
 import io.github.pwszpl.mongo.parser.Token;
 import io.github.pwszpl.mongo.search.util.StringUtil;
+import org.bson.BsonSymbol;
 import org.springframework.data.mongodb.core.aggregation.DateOperators;
 
 import java.sql.Timestamp;
@@ -42,6 +43,8 @@ public class TransformObject {
         if(object instanceof Token){
             Token token = (Token)object;
             switch(token.kind){
+                case MongoSearchEngineParserConstants.SPRING_TOKEN:
+                    return token.image;
                 case MongoSearchEngineParserConstants.STRING_LITERAL:
                     return StringUtil.unescape(token).image;
                 case MongoSearchEngineParserConstants.R_NUMBER:

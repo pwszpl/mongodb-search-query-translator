@@ -56,6 +56,7 @@ TOKEN : { < LE : "<=" >}
 TOKEN : { < GE : ">=" >}
 TOKEN : { < BOOLEAN: "TRUE" | "FALSE" >}
 TOKEN : { < COMMA: "," >}
+TOKEN : { < SPRING_TOKEN: "?" (<DIGITS>)+ >}
 TOKEN : { < TIMESTAMP : <DATE> "T" (<DIGITS>){2} ":" (<DIGITS>){2} ":" (<DIGITS>){2} >}
 TOKEN : { < DATE: (<DIGITS>){4} "-" (<DIGITS>){2} "-" (<DIGITS>){2} >}
 TOKEN : { < INT_NUMBER : <DIGITS> >}
@@ -236,7 +237,7 @@ Object evaluatFieldOperator(Token field):
     }
     |
     // value token order is important here because of a way statements are generated (especially for date types)
-    (operator=<GE> | operator=<LE> | operator=<EQ> | operator=<NE> | operator=<GT> | operator=<LT>) (value=<INT_NUMBER> | value=<R_NUMBER> | value= <STRING_LITERAL> | value=<TIMESTAMP> | value=<DATE>  )
+    (operator=<GE> | operator=<LE> | operator=<EQ> | operator=<NE> | operator=<GT> | operator=<LT>) (value=<INT_NUMBER> | value=<R_NUMBER> | value= <STRING_LITERAL> | value=<TIMESTAMP> | value=<DATE> | value=<SPRING_TOKEN>  )
         {
             return applyTransfromFunction(operator,field,value);
         }
@@ -247,12 +248,12 @@ Object evaluatFieldOperator(Token field):
         }
     |
     operator=<MATCHES> <L_PAR>
-            subField=<OBJ_FIELD> subOperator=<EQ>(value=<INT_NUMBER> | value=<R_NUMBER> | value= <STRING_LITERAL> )
+            subField=<OBJ_FIELD> subOperator=<EQ>(value=<INT_NUMBER> | value=<R_NUMBER> | value= <STRING_LITERAL> | value=<SPRING_TOKEN> )
             {
                 inList.add(applyTransfromFunction(subOperator,subField,value));
             }
         (
-            <AND> subField=<OBJ_FIELD> subOperator=<EQ>(value=<INT_NUMBER> | value=<R_NUMBER> | value= <STRING_LITERAL> )
+            <AND> subField=<OBJ_FIELD> subOperator=<EQ>(value=<INT_NUMBER> | value=<R_NUMBER> | value= <STRING_LITERAL> | value=<SPRING_TOKEN> )
             {
                 inList.add(applyTransfromFunction(subOperator,subField,value));
             }

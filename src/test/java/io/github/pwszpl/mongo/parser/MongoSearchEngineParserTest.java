@@ -7,6 +7,9 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 import io.github.pwszpl.mongo.util.TestBuilder;
 import io.github.pwszpl.mongo.parser.MongoSearchEngineParser;
+import org.bson.BsonDocument;
+import org.bson.BsonObjectId;
+import org.bson.BsonSymbol;
 import org.bson.Document;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -97,6 +100,13 @@ class MongoSearchEngineParserTest {
                 .assertBsonResult(Filters.gte("numField",20.0))
                 .assertBsonDbResult(2)
                 .assertCriteriaResult(Criteria.where("numField").gte(20.0));
+    }
+
+    @Test
+    void shouldEvaluateSpringTokens(){
+        TestBuilder.build("stringField=?1")
+                .assertBsonResult(Filters.eq("stringField","?1"))
+                .assertCriteriaResult(new Criteria("stringField").is("?1"));
     }
 
     @Test
