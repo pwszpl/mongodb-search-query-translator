@@ -3,10 +3,7 @@ package io.github.pwszpl.mongo.search.transform;
 import io.github.pwszpl.mongo.parser.MongoSearchEngineParserConstants;
 import io.github.pwszpl.mongo.parser.Token;
 import io.github.pwszpl.mongo.search.util.StringUtil;
-import org.bson.BsonSymbol;
-import org.springframework.data.mongodb.core.aggregation.DateOperators;
 
-import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.Date;

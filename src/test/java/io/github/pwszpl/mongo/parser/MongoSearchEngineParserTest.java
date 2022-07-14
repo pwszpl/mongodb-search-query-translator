@@ -6,10 +6,6 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 import io.github.pwszpl.mongo.util.TestBuilder;
-import io.github.pwszpl.mongo.parser.MongoSearchEngineParser;
-import org.bson.BsonDocument;
-import org.bson.BsonObjectId;
-import org.bson.BsonSymbol;
 import org.bson.Document;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -22,7 +18,6 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.utility.DockerImageName;
 
 import java.time.Instant;
-import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.stream.Collectors;
