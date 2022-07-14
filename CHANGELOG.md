@@ -1,3 +1,6 @@
+# 0.6.0
+* added support for Spring Data mapping token
+
 # 0.5.0
 * added support for DATE and DATETIME types comparision
 * moved all classes to io.github.pwszpl namespace 

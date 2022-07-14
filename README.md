@@ -15,7 +15,7 @@ If you use maven you can add dependency to build:
         </dependency>
 
 ## Usage
-To parse String please initialize Parser with stream, and run parse method wchich will return bson object.
+To parse String please initialize Parser with stream, and run parse method which will return bson object.
 
     String s = "`x.z='z'";
     MongoSearchEngineParser parser = new MongoSearchEngineParser(new StringReader(s));
@@ -40,8 +40,9 @@ Passing string `x.y='z' and x.z='z'` will return:
 
 For more examples see [MongoSearchEngineParserTest.class](https://github.com/pwszpl/mongodb-search-query-translator/blob/main/src/test/java/mongo/parser/MongoSearchEngineParserTest.java).
 
+For live example of usage for this plugin see [MongoDB HTML search engine](https://github.com/pwszpl/mongodb-html-search-engine).
 
-### Integrating with SpringBoot
+### Integrating with Spring Boot
 To pass resulting object to DB you can use MongoTemplate interface:
 
     parser.setCriteraMode();
@@ -116,6 +117,8 @@ Following types are supported for comparision:
 * **Integers**  - any digits chain without decimal separator (e.g.: `field = 9`)
 * **Dates** - `YYYY-MM-DD` notation
 * **Dates with time** - `YYYY-MM-DDTHH:MI:SS` notation
+* **Spring special token** - `?<DIGIT>` - token used to map funtion parameters in Spring Query interface (e.g. `field = ?0`).
+This token is valid only with Spring. In other cases it is treated as string literal.
 
 
 ### Important notes
