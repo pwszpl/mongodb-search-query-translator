@@ -26,7 +26,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <javacc.plugin.version>2.6</javacc.plugin.version>
         <junit.version>5.8.0</junit.version>
-        <mongo.driver.version>4.6.0</mongo.driver.version>
+        <mongo.driver.version>4.6.1</mongo.driver.version>
         <springboot.version>2.6.2</springboot.version>
         <testcontainers.version>1.17.3</testcontainers.version>
     </properties>
