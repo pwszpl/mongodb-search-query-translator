@@ -4,6 +4,6 @@ updates:
     directory: "/" # Location of package manifests
     schedule:
       interval: "daily"
-    only:
+    allow:
       - dependency-name: org.springframework.boot:spring-boot-starter-data-mongodb
       - dependency-name: org.mongodb:mongodb-driver-sync
