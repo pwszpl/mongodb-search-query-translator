@@ -9,7 +9,7 @@ on:
         required: true
       OSSRH_TOKEN:
         required: true
-      MAVEN_GPG_PASSPHRASE:
+      OSSRH_GPG_SECRET_KEY:
         required: true
       OSSRH_GPG_SECRET_KEY_PASSWORD:
         required: true
